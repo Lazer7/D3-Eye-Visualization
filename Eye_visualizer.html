@@ -61,7 +61,7 @@
                 </div>
                 <div class="columns top-spacing">
                     <div class="column is-1 has-text-right">
-                        <a class="button" onclick="play()"><i class="fas fa-play"></i></a>
+                        <a class="button" onclick="play()"><i id="playericon" class="fas fa-play"></i></a>
                     </div>
                     <div class="column">
                         <div class="slidecontainer container-spacing">
@@ -107,7 +107,8 @@
     <script>
         var slider = document.getElementById("timeline");
         var monitor = document.getElementById("monitor");
-        var container = document.getElementById("container")
+        var container = document.getElementById("container");
+        var intervalHandler = undefined;
         // Setting slider to show 1 second per frame
         slider.max = baseline.length;
 
@@ -117,18 +118,27 @@
         var minY = getGZDYMin();
 
         function play() {
-            window.setInterval(() => {
-                slider.value = parseInt(slider.value) + 1;
-                var frameNumber = document.getElementById("frame");
-                frameNumber.innerHTML = slider.value;
-                d3.select("#my_dataviz").remove();
-                var svgContainer = document.createElement("DIV");
-                svgContainer.id = "my_dataviz"
-                container.appendChild(svgContainer)
+            if (intervalHandler === undefined) {
+                document.getElementById("playericon").innerHTML= "<i id='playericon' class='fas fa-pause'></i>";
+                intervalHandler = window.setInterval(() => {
+                    slider.value = parseInt(slider.value) + 1;
+                    var frameNumber = document.getElementById("frame");
+                    frameNumber.innerHTML = slider.value;
+                    d3.select("#my_dataviz").remove();
+                    var svgContainer = document.createElement("DIV");
+                    svgContainer.id = "my_dataviz"
+                    container.appendChild(svgContainer)
 
-                createSVG(slider.value - 1);
-            }, 1000);
+                    createSVG(slider.value - 1);
+                }, 1000);
+            } else {
+                document.getElementById("playericon").innerHTML= "<i id='playericon' class='fas fa-play'></i>";
+                clearInterval(intervalHandler);
+                intervalHandler = undefined;
+            }
         }
+
+
 
         slider.addEventListener('input', () => {
             var frameNumber = document.getElementById("frame");
