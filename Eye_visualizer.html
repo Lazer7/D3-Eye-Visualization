@@ -16,12 +16,20 @@
 
     <!-- specific plugin -->
     <script src="https://d3js.org/d3-contour.v1.min.js"></script>
+    <!-- data -->
+    <script type="text/javascript" src="./Data/p6GZD.js"></script>
+    <script type="text/javascript" src="./Data/p6graphGZD.js"></script>
+    <script type="text/javascript" src="./Data/p6treeGZD.js"></script>
+    <script type="text/javascript" src="./Data/p6graphFXD.js"></script>
+    <script type="text/javascript" src="./Data/p6treeFXD.js"></script>
+    <script type="text/javascript" src="./Data/p6graphEVD.js"></script>
+    <script type="text/javascript" src="./Data/p6treeEVD.js"></script>
 </head>
 
 <body>
     <div class="columns">
         <!-- This section is the context menu html -->
-        <div class="column is-3">
+        <div class="column is-2">
             <div class="context-menu hero is-fullheight">
                 <aside class="menu">
                     <p class="menu-label">
@@ -36,18 +44,39 @@
             </div>
         </div>
         <!-- End of context menu html -->
+
         <!-- Start of Visualization Code -->
         <div class="column">
-            <!-- Create a div where the graph will take place -->
+            <!-- Baseline D3 Visualization -->
             <div id="baseline" class="start">
-                Baseline
+                <div class="image">
+                    <img src="https://render.fineartamerica.com/images/rendered/default/print/8.000/5.375/break/images-medium-5/computer-monitor-vector-icon-bdcreations.jpg"
+                        width="100%" />
+                </div>
+                <div class="columns topmargin">
+                    <div class="column">
+                        <div class="slidecontainer">
+                            <input type="range" min="1" max="100" value="0" class="slider" id="timeline">
+                        </div>
+                    </div>
+                    <div class="column is-">
+                        <p id="frame">0</p>
+                    </div>
+                </div>
             </div>
+            <!-- Graph D3 Visualization -->
             <div id="graph" class="default">
                 Graph
             </div>
+            <!-- Tree D3 Visualization -->
             <div id="tree" class="default">
                 Tree
             </div>
+        </div>
+        <!-- End of Visualization Code -->
+        <!-- Start of Pupil Dialation -->
+        <div class="column is-2">
+            Pupils
         </div>
     </div>
 
@@ -61,10 +90,16 @@
         }
     </script>
 
-    <!-- Embedded Javscript for visualization-->
+    <!-- Embedded Javscript for Baseline visualization-->
     <script>
-
+        console.log(treeFXD)
+        var slider = document.getElementById("timeline");
+        slider.addEventListener('input', () => {
+            var frameNumber = document.getElementById("frame");
+            frameNumber.innerHTML = slider.value;
+        }, false);
     </script>
+
 </body>
 
 </html>
@@ -77,14 +112,57 @@
         background-color: #2d2d2d;
         padding: 5% 5% 5% 5%;
     }
+
     .menu * {
         color: #ffffff !important;
     }
-    .start{
+
+    .start {
         display: block;
     }
-    .default{
+
+    .default {
         display: none;
     }
+
+    .topmargin {
+        margin-top: 2%;
+    }
+
+    /* Slider CSS */
+    .slider {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 100%;
+        height: 15px;
+        border-radius: 5px;
+        background: #d3d3d3;
+        outline: none;
+        opacity: 0.7;
+        -webkit-transition: .2s;
+        transition: opacity .2s;
+    }
+
+    .slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        background: #4CAF50;
+        cursor: pointer;
+    }
+
+    .slider::-moz-range-thumb {
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        background: #4CAF50;
+        cursor: pointer;
+    }
+
     /* D3 Example Visualization */
+    #baseline {
+        margin-top: 2%;
+    }
 </style>
