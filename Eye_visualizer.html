@@ -22,7 +22,7 @@
     <!-- specific plugin -->
     <script src="https://d3js.org/d3-hexbin.v0.2.min.js"></script>
     <!-- data -->
-    <script type="text/javascript" src="./Data/p6GZD.js"></script>
+    <script type="text/javascript" src="./Data/yeetcannon.js"></script>
     <!-- <script type="text/javascript" src="./Data/p6graphGZD.js"></script>
     <script type="text/javascript" src="./Data/p6treeGZD.js"></script>
     <script type="text/javascript" src="./Data/p6graphFXD.js"></script>
@@ -57,7 +57,7 @@
                 <div id="container">
                     <div id="my_dataviz"></div>
                     <img src="https://render.fineartamerica.com/images/rendered/default/print/8.000/5.375/break/images-medium-5/computer-monitor-vector-icon-bdcreations.jpg"
-                        width="100%" id="monitor" />
+                        id="monitor" />
                 </div>
                 <div class="columns top-spacing">
                     <div class="column is-1 has-text-right">
@@ -86,13 +86,83 @@
         <!-- End of Visualization Code -->
         <!-- Start of Pupil Dialation -->
         <div class="column is-2">
-            Pupils
+            <div id="leftcontainer" class="box">
+                LEFT EYE
+                <canvas id="leftpupils"></canvas>
+            </div>
+            <div id="rightcontainer" class="box">
+                RIGHT EYE
+                <canvas id="rightpupils"></canvas>
+            </div>
         </div>
     </div>
 
 
     </div>
 
+
+
+
+    <!-- Embedded Javascript for Pupils -->
+    <script>
+        function changeLeftPupil(value) {
+            var container = document.getElementById('leftcontainer');
+
+            // Resetting value
+            document.getElementById("leftpupils").remove();
+            var svgContainer = document.createElement("CANVAS");
+            svgContainer.id = "leftpupils"
+            container.appendChild(svgContainer);
+            var canvas = document.getElementById('leftpupils');
+
+            var ctx = canvas.getContext('2d');
+            var startX = 75,
+                startY = 75;
+            var startAngle = 0,
+                endAngle = 180;
+            var radius = value *10;
+            // Drawing Eye
+            // var img = new Image;
+            // img.onload = function () {
+            //     ctx.drawImage(img, 20, 20);
+            //     alert('the image is drawn');
+            // }
+            // img.src = URL.createObjectURL(e.target.files[0]);
+            // Drawing Pupil
+            if (radius > 0) {
+                ctx.beginPath();
+                ctx.arc(startX, startY, radius, startAngle, endAngle, 0);
+                ctx.fill();
+            }
+        }
+
+        function changeRightPupil(value) {
+            var container = document.getElementById('rightcontainer');
+
+            // Resetting value
+            document.getElementById("rightpupils").remove();
+            var svgContainer = document.createElement("CANVAS");
+            svgContainer.id = "rightpupils"
+            container.appendChild(svgContainer);
+            var canvas = document.getElementById('rightpupils');
+
+
+
+            var ctx = canvas.getContext('2d');
+            var startX = 75,
+                startY = 75;
+            var startAngle = 0,
+                endAngle = 180;
+            var radius = value*10;
+            if (radius > 0) {
+                // Drawing Pupil
+                ctx.beginPath();
+                ctx.arc(startX, startY, radius, startAngle, endAngle, 0);
+                ctx.fill();
+            }
+            // ctx.stroke();
+        }
+    </script>
     <!-- Embedded Javscript for the context menu-->
     <script>
         function load(id) {
@@ -103,7 +173,7 @@
         }
     </script>
 
-    <!-- Embedded Javscript for Baseline visualization-->
+    <!-- Embedded Javascript for Baseline visualization-->
     <script>
         var slider = document.getElementById("timeline");
         var monitor = document.getElementById("monitor");
@@ -119,7 +189,7 @@
 
         function play() {
             if (intervalHandler === undefined) {
-                document.getElementById("playericon").innerHTML= "<i id='playericon' class='fas fa-pause'></i>";
+                document.getElementById("playericon").innerHTML = "<i id='playericon' class='fas fa-pause'></i>";
                 intervalHandler = window.setInterval(() => {
                     slider.value = parseInt(slider.value) + 1;
                     var frameNumber = document.getElementById("frame");
@@ -132,7 +202,7 @@
                     createSVG(slider.value - 1);
                 }, 1000);
             } else {
-                document.getElementById("playericon").innerHTML= "<i id='playericon' class='fas fa-play'></i>";
+                document.getElementById("playericon").innerHTML = "<i id='playericon' class='fas fa-play'></i>";
                 clearInterval(intervalHandler);
                 intervalHandler = undefined;
             }
@@ -197,6 +267,8 @@
                     inputForHexbinFun.push([x(parseInt(baseline[value].RightScreenX, 10)), y(parseInt(baseline[
                             value]
                         .RightScreenY, 10))]);
+                    changeRightPupil(baseline[value].RightPupil);
+                    changeLeftPupil(baseline[value].LeftPupil);
                     console.log(inputForHexbinFun)
                     // Prepare a color palette
                     var color = d3.scaleLinear()
@@ -271,6 +343,8 @@
             });
         }
     </script>
+
+
 
 </body>
 
@@ -350,5 +424,10 @@
     #my_dataviz {
         position: absolute;
         top: 0;
+    }
+
+    /* Pupil Styling */
+    .box {
+        margin-top: 50%;
     }
 </style>
