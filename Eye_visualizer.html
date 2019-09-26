@@ -116,8 +116,8 @@
                   //data for graph
                   var data = []
                   baseline.forEach(element=>{
-                      data.push([x(parseInt(element.RightScreenX), 10), y(parseInt(element.RightScreenY), 10)]);
-                      data.push([x(parseInt(element.LeftScreenX), 10), y(parseInt(element.LeftScreenY), 10)]);
+                      data.push([x(parseInt(element.RightScreenX, 10)), y(parseInt(element.RightScreenY, 10))]);
+                      data.push([x(parseInt(element.LeftScreenX, 10)), y(parseInt(element.LeftScreenY, 10))]);
                   })
 
                   // Add dots
