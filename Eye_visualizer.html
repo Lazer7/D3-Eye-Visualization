@@ -81,6 +81,54 @@
             <!-- Tree D3 Visualization -->
             <div id="tree" class="default">
                 Tree
+                <div id="treeviz"></div>
+                <script>
+                  // set the dimensions and margins of the graph
+                  var margin = {top: 10, right: 30, bottom: 30, left: 60},
+                    width = 460 - margin.left - margin.right,
+                    height = 400 - margin.top - margin.bottom;
+
+                  // append the svg object to the body of the page
+                  var svg = d3.select("#treeviz")
+                  .append("svg")
+                    .attr("width", width + margin.left + margin.right)
+                    .attr("height", height + margin.top + margin.bottom)
+                  .append("g")
+                    .attr("transform",
+                          "translate(" + margin.left + "," + margin.top + ")");
+
+
+                  // Add X axis
+                  var x = d3.scaleLinear()
+                    .domain([0, 1000])
+                    .range([ 0, width ]);
+                  svg.append("g")
+                    .attr("transform", "translate(0," + height + ")")
+                    .call(d3.axisBottom(x));
+
+                  // Add Y axis
+                  var y = d3.scaleLinear()
+                    .domain([1000, 0])
+                    .range([ height, 0]);
+                  svg.append("g")
+                    .call(d3.axisLeft(y));
+
+                  //data for graph
+                  var data = []
+                  baseline.forEach(element=>{
+                      data.push([x(parseInt(element.RightScreenX), 10), y(parseInt(element.RightScreenY), 10)]);
+                      data.push([x(parseInt(element.LeftScreenX), 10), y(parseInt(element.LeftScreenY), 10)]);
+                  })
+
+                  // Add dots
+                  svg.append("g")
+                    .selectAll("dot")
+                    .data(data)
+                    .enter()
+                    .append("circle")
+                      .attr("r", 1.5)
+                      .style("fill", "#69b3a2");
+                </script>
             </div>
         </div>
         <!-- End of Visualization Code -->
@@ -163,7 +211,7 @@
                 },
                 width = monitor.clientWidth - margin.left - margin.right,
                 height = monitor.clientHeight - margin.top - margin.bottom;
-            // append the svg object to the body of the page 
+            // append the svg object to the body of the page
             var svg = d3.select("#my_dataviz")
                 .append("svg")
                 .attr("width", width + margin.left + margin.right)
@@ -271,7 +319,6 @@
             });
         }
     </script>
-
 </body>
 
 </html>
