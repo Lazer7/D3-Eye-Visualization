@@ -82,53 +82,6 @@
             <div id="tree" class="default">
                 Tree
                 <div id="treeviz"></div>
-                <script>
-                  // set the dimensions and margins of the graph
-                  var margin = {top: 10, right: 30, bottom: 30, left: 60},
-                    width = 460 - margin.left - margin.right,
-                    height = 400 - margin.top - margin.bottom;
-
-                  // append the svg object to the body of the page
-                  var svg = d3.select("#treeviz")
-                  .append("svg")
-                    .attr("width", width + margin.left + margin.right)
-                    .attr("height", height + margin.top + margin.bottom)
-                  .append("g")
-                    .attr("transform",
-                          "translate(" + margin.left + "," + margin.top + ")");
-
-
-                  // Add X axis
-                  var x = d3.scaleLinear()
-                    .domain([0, 1000])
-                    .range([ 0, width ]);
-                  svg.append("g")
-                    .attr("transform", "translate(0," + height + ")")
-                    .call(d3.axisBottom(x));
-
-                  // Add Y axis
-                  var y = d3.scaleLinear()
-                    .domain([1000, 0])
-                    .range([ height, 0]);
-                  svg.append("g")
-                    .call(d3.axisLeft(y));
-
-                  //data for graph
-                  var data = []
-                  baseline.forEach(element=>{
-                      data.push([x(parseInt(element.RightScreenX, 10)), y(parseInt(element.RightScreenY, 10))]);
-                      data.push([x(parseInt(element.LeftScreenX, 10)), y(parseInt(element.LeftScreenY, 10))]);
-                  })
-
-                  // Add dots
-                  svg.append("g")
-                    .selectAll("dot")
-                    .data(data)
-                    .enter()
-                    .append("circle")
-                      .attr("r", 1.5)
-                      .style("fill", "#69b3a2");
-                </script>
             </div>
         </div>
         <!-- End of Visualization Code -->
@@ -167,7 +120,7 @@
 
         function play() {
             if (intervalHandler === undefined) {
-                document.getElementById("playericon").innerHTML= "<i id='playericon' class='fas fa-pause'></i>";
+                document.getElementById("playericon").innerHTML = "<i id='playericon' class='fas fa-pause'></i>";
                 intervalHandler = window.setInterval(() => {
                     slider.value = parseInt(slider.value) + 1;
                     var frameNumber = document.getElementById("frame");
@@ -180,7 +133,7 @@
                     createSVG(slider.value - 1);
                 }, 1000);
             } else {
-                document.getElementById("playericon").innerHTML= "<i id='playericon' class='fas fa-play'></i>";
+                document.getElementById("playericon").innerHTML = "<i id='playericon' class='fas fa-play'></i>";
                 clearInterval(intervalHandler);
                 intervalHandler = undefined;
             }
@@ -245,7 +198,6 @@
                     inputForHexbinFun.push([x(parseInt(baseline[value].RightScreenX, 10)), y(parseInt(baseline[
                             value]
                         .RightScreenY, 10))]);
-                    console.log(inputForHexbinFun)
                     // Prepare a color palette
                     var color = d3.scaleLinear()
                         .domain([, 1000]) // Number of points in the bin?
@@ -319,6 +271,67 @@
             });
         }
     </script>
+
+    <script>
+        // set the dimensions and margins of the graph
+        var margin = {
+                top: 10,
+                right: 30,
+                bottom: 30,
+                left: 60
+            },
+            width = 460 - margin.left - margin.right,
+            height = 400 - margin.top - margin.bottom;
+
+        // append the svg object to the body of the page
+        var svg = d3.select("#treeviz")
+            .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform",
+                "translate(" + margin.left + "," + margin.top + ")");
+
+
+        // Add X axis
+        var x = d3.scaleLinear()
+            .domain([-1000, 1000])
+            .range([0, width]);
+        svg.append("g")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x));
+
+        // Add Y axis
+        var y = d3.scaleLinear()
+            .domain([-1000, 1000])
+            .range([height, 0]);
+        svg.append("g")
+            .call(d3.axisLeft(y));
+
+        //data for graph
+        var data = []
+        baseline.forEach(element => {
+            data.push([x(parseInt(element.RightScreenX, 10)), y(parseInt(element.RightScreenY,
+                10))]);
+            data.push([x(parseInt(element.LeftScreenX, 10)), y(parseInt(element.LeftScreenY, 10))]);
+        })
+        console.log(data)
+        // Add dots
+        svg.append('g')
+            .selectAll("dot")
+            .data(data)
+            .enter()
+            .append("circle")
+            .attr("cx", function (d) {
+                return x(d[0]);
+            })
+            .attr("cy", function (d) {
+                return y(d[1]);
+            })
+            .attr("r", 1.5)
+            .style("fill", "#69b3a2")
+    </script>
+
 </body>
 
 </html>
