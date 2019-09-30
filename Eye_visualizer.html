@@ -311,9 +311,8 @@
         //data for graph
         var data = []
         graphGZD.forEach(element => {
-            data.push([x(parseInt(element.LeftScreenX, 10)), y(parseInt(element.LeftScreenY,
-                10))]);
-            data.push([x(parseInt(element.RightScreenX, 10)), y(parseInt(element.RightScreenY, 10))]);
+            data.push([element.LeftScreenX,element.LeftScreenY]);
+            data.push([element.RightScreenX,element.RightScreenY]);
         })
         console.log(data)
 
