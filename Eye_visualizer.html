@@ -23,6 +23,8 @@
     <script src="https://d3js.org/d3-hexbin.v0.2.min.js"></script>
     <!-- data -->
     <script type="text/javascript" src="./Data/p6GZD.js"></script>
+    <!-- <script type="text/javascript" src="./Data/p6treeGZD.js"></script>
+    <script type="text/javascript" src="./Data/p6treeFXD.js"></script> -->
     <!-- <script type="text/javascript" src="./Data/p6graphGZD.js"></script>
     <script type="text/javascript" src="./Data/p6treeGZD.js"></script>
     <script type="text/javascript" src="./Data/p6graphFXD.js"></script>
@@ -193,11 +195,10 @@
 
                     // Reformat the baseline Data to d3.hexbin() needs a specific format
                     var inputForHexbinFun = []
-                    inputForHexbinFun.push([x(parseInt(baseline[value].LeftScreenX, 10)), y(parseInt(baseline[value]
-                        .LeftScreenY, 10))]);
-                    inputForHexbinFun.push([x(parseInt(baseline[value].RightScreenX, 10)), y(parseInt(baseline[
-                            value]
-                        .RightScreenY, 10))]);
+                    inputForHexbinFun.push([baseline[value].LeftScreenX, baseline[value]
+                        .LeftScreenY]);
+                    inputForHexbinFun.push([baseline[value].RightScreenX, baseline[
+                            value].RightScreenY]);
                     // Prepare a color palette
                     var color = d3.scaleLinear()
                         .domain([, 1000]) // Number of points in the bin?
@@ -295,7 +296,7 @@
 
         // Add X axis
         var x = d3.scaleLinear()
-            .domain([-1000, 1000])
+            .domain([0, 1000])
             .range([0, width]);
         svg.append("g")
             .attr("transform", "translate(0," + height + ")")
@@ -303,23 +304,35 @@
 
         // Add Y axis
         var y = d3.scaleLinear()
-            .domain([-1000, 1000])
+            .domain([1000, 0])
             .range([height, 0]);
         svg.append("g")
             .call(d3.axisLeft(y));
 
-        //data for graph
-        var data = []
-        baseline.forEach(element => {
-            data.push([x(parseInt(element.RightScreenX, 10)), y(parseInt(element.RightScreenY,
-                10))]);
-            data.push([x(parseInt(element.LeftScreenX, 10)), y(parseInt(element.LeftScreenY, 10))]);
+        //xy coordinates for graph
+        // var gzdata = []
+        // baseline.forEach(element => {
+        //     gzdata.push([element.RightScreenX, element.RightScreenY]);
+        //     gzdata.push([element.LeftScreenX, element.LeftScreenY]);
+        // })
+
+        var timeframe = 10000
+
+        var fixdata = []
+        var gzddata = []
+        treeFXD.forEach(element => {
+          treeGZD.forEach(elementGZD => {
+            if (element.Time + element. > elementGZD.Time){
+              gzdata.push([elementGZD.RightScreenX, elementGZD.RightScreenY]);
+              gzdata.push([elementGZD.LeftScreenX, elementGZD.LeftScreenY]);
+            }
+          })
         })
-        console.log(data)
+
         // Add dots
-        svg.append('g')
+        svg.append("g")
             .selectAll("dot")
-            .data(data)
+            .data(gzdata)
             .enter()
             .append("circle")
             .attr("cx", function (d) {
