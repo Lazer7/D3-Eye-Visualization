@@ -192,11 +192,8 @@
 
                     // Reformat the baseline Data to d3.hexbin() needs a specific format
                     var inputForHexbinFun = []
-                    inputForHexbinFun.push([x(parseInt(graphFXD[value].LeftScreenX, 10)), y(parseInt(graphFXD[value]
-                        .LeftScreenY, 10))]);
-                    inputForHexbinFun.push([x(parseInt(graphFXD[value].RightScreenX, 10)), y(parseInt(graphFXD[
-                            value]
-                        .RightScreenY, 10))]);
+                    inputForHexbinFun.push([x(parseInt(graphFXD[value].ScreenX, 10)), y(parseInt(graphFXD[value]
+                        .ScreenY, 10))]);
                     console.log(inputForHexbinFun)
                     // Prepare a color palette
                     var color = d3.scaleLinear()
@@ -238,36 +235,36 @@
         function getFXDYMax() {
             return graphFXD.reduce((max, p) => {
                 if (max.constructor === ({}).constructor) {
-                    max = max.LeftScreenY
+                    max = max.ScreenY
                 }
-                return Math.max(p.LeftScreenY, p.RightScreenY, max);
+                return Math.max(p.ScreenY, max);
             });
         }
 
         function getFXDXMax() {
             return graphFXD.reduce((max, p) => {
                 if (max.constructor === ({}).constructor) {
-                    max = max.LeftScreenX
+                    max = max.ScreenX
                 }
-                return Math.max(p.LeftScreenX, p.RightScreenX, max);
+                return Math.max(p.ScreenX, max);
             });
         }
 
         function getFXDXMin() {
             return graphFXD.reduce((min, p) => {
                 if (min.constructor === ({}).constructor) {
-                    min = min.LeftScreenX
+                    min = min.ScreenX
                 }
-                return Math.min(p.LeftScreenX, p.RightScreenX, min);
+                return Math.min(p.ScreenX, min);
             });
         }
 
         function getFXDYMin() {
             return graphFXD.reduce((min, p) => {
                 if (min.constructor === ({}).constructor) {
-                    min = min.LeftScreenY
+                    min = min.ScreenY
                 }
-                return Math.min(p.LeftScreenY, p.RightScreenY, min);
+                return Math.min(p.ScreenY, min);
             });
         }
     </script>
