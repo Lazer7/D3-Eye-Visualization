@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Eye Visualization</title>
+    <!-- Bulma Style Sheet -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+        integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+    <!-- Font Awesome Icons -->
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <!-- D3 Visualization Javascript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
+    <!-- Load d3.js -->
+    <script src="https://d3js.org/d3.v4.js"></script>
+
+    <!-- specific plugin -->
+    <script src="https://d3js.org/d3.v4.js"></script>
+
+    <!-- specific plugin -->
+    <script src="https://d3js.org/d3-hexbin.v0.2.min.js"></script>
+    <!-- data -->
+  <!--  <script type="text/javascript" src="./Data/p6GZD.js"></script>-->
+    <!-- <script type="text/javascript" src="./Data/p6graphGZD.js"></script>-->
+  <!--  <script type="text/javascript" src="./Data/p6treeGZD.js"></script>-->
+    <script type="text/javascript" src="./Data/p6graphFXD.js"></script>
+  <!--  <script type="text/javascript" src="./Data/p6treeFXD.js"></script>
+    <script type="text/javascript" src="./Data/p6graphEVD.js"></script>
+    <script type="text/javascript" src="./Data/p6treeEVD.js"></script> -->
+</head>
+
+<body>
+    <div class="columns">
+        <!-- This section is the context menu html -->
+        <div class="column is-2">
+            <div class="context-menu hero is-fullheight">
+                <aside class="menu">
+                    <p class="menu-label">
+                        Eye Tracking Visualization
+                    </p>
+                    <ul class="menu-list">
+                        <li><a onclick="load('baseline')">Base Line</a></li>
+                        <li><a onclick="load('graph')">Graph</a></li>
+                        <li><a onclick="load('tree')">Tree</a></li>
+                    </ul>
+                </aside>
+            </div>
+        </div>
+        <!-- End of context menu html -->
+
+        <!-- Start of Visualization Code -->
+        <div class="column is-8">
+            <!-- Baseline D3 Visualization -->
+            <div id="baseline" class="start top-spacing">
+                <div id="container">
+                    <div id="my_dataviz"></div>
+                    <img src="https://render.fineartamerica.com/images/rendered/default/print/8.000/5.375/break/images-medium-5/computer-monitor-vector-icon-bdcreations.jpg"
+                        width="100%" id="monitor" />
+                </div>
+                <div class="columns top-spacing">
+                    <div class="column is-1 has-text-right">
+                        <a class="button" onclick="play()"><i id="playericon" class="fas fa-play"></i></a>
+                    </div>
+                    <div class="column">
+                        <div class="slidecontainer container-spacing">
+                            <input type="range" min="1" max="100" value="0" class="slider" id="timeline">
+                        </div>
+                    </div>
+                    <div class="column is-1 container-spacing">
+                        <p id="frame">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Graph D3 Visualization -->
+            <div id="graph" class="default">
+                Graph
+            </div>
+            <!-- Tree D3 Visualization -->
+            <div id="tree" class="default">
+                Tree
+            </div>
+        </div>
+        <!-- End of Visualization Code -->
+        <!-- Start of Pupil Dialation -->
+        <div class="column is-2">
+            Pupils
+        </div>
+    </div>
+
+
+    </div>
+
+    <!-- Embedded Javscript for the context menu-->
+    <script>
+        function load(id) {
+            document.getElementById("baseline").style.display = "none";
+            document.getElementById("graph").style.display = "none";
+            document.getElementById("tree").style.display = "none";
+            document.getElementById(id).style.display = "block";
+        }
+    </script>
+
+    <!-- Embedded Javscript for Baseline visualization-->
+    <script>
+        var slider = document.getElementById("timeline");
+        var monitor = document.getElementById("monitor");
+        var container = document.getElementById("container");
+        var intervalHandler = undefined;
+        // Setting slider to show 1 second per frame
+        slider.max = baseline.length;
+
+        var maxY = getFXDYMax();
+        var maxX = getFXDXMax();
+        var minX = getFXDXMin();
+        var minY = getFXDYMin();
+
+        function play() {
+            if (intervalHandler === undefined) {
+                document.getElementById("playericon").innerHTML= "<i id='playericon' class='fas fa-pause'></i>";
+                intervalHandler = window.setInterval(() => {
+                    slider.value = parseInt(slider.value) + 1;
+                    var frameNumber = document.getElementById("frame");
+                    frameNumber.innerHTML = slider.value;
+                    d3.select("#my_dataviz").remove();
+                    var svgContainer = document.createElement("DIV");
+                    svgContainer.id = "my_dataviz"
+                    container.appendChild(svgContainer)
+
+                    createSVG(slider.value - 1);
+                }, 1000);
+            } else {
+                document.getElementById("playericon").innerHTML= "<i id='playericon' class='fas fa-play'></i>";
+                clearInterval(intervalHandler);
+                intervalHandler = undefined;
+            }
+        }
+
+
+
+        slider.addEventListener('input', () => {
+            var frameNumber = document.getElementById("frame");
+            frameNumber.innerHTML = slider.value;
+            d3.select("#my_dataviz").remove();
+            var svgContainer = document.createElement("DIV");
+            svgContainer.id = "my_dataviz"
+            container.appendChild(svgContainer)
+
+            createSVG(slider.value - 1);
+        }, false);
+        createSVG(slider.value - 1);
+
+        // Defining Functions
+        function createSVG(value) {
+            // set the dimensions and margins of the graph
+            var margin = {
+                    top: 10,
+                    right: 30,
+                    bottom: 30,
+                    left: 40
+                },
+                width = monitor.clientWidth - margin.left - margin.right,
+                height = monitor.clientHeight - margin.top - margin.bottom;
+            // append the svg object to the body of the page
+            var svg = d3.select("#my_dataviz")
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform",
+                    "translate(" + margin.left + "," + margin.top + ")");
+            // read data
+            d3.csv("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/data_for_density2d.csv",
+                function (data) {
+                    // Add X axis
+                    var x = d3.scaleLinear()
+                        .domain([minX, maxX])
+                        .range([0, width]);
+                    svg.append("g")
+                        .attr("transform", "translate(" + 0 + "," + height + ")")
+                        .call(d3.axisBottom(x));
+
+                    // Add Y axis
+                    var y = d3.scaleLinear()
+                        .domain([minY, maxY])
+                        .range([height, 0]);
+                    svg.append("g")
+                        // .attr("transform", "translate(" + ((width / 2)) + "," + 0 + ")")
+                        .call(d3.axisLeft(y));
+
+                    // Reformat the baseline Data to d3.hexbin() needs a specific format
+                    var inputForHexbinFun = []
+                    inputForHexbinFun.push([x(parseInt(graphFXD[value].LeftScreenX, 10)), y(parseInt(graphFXD[value]
+                        .LeftScreenY, 10))]);
+                    inputForHexbinFun.push([x(parseInt(graphFXD[value].RightScreenX, 10)), y(parseInt(graphFXD[
+                            value]
+                        .RightScreenY, 10))]);
+                    console.log(inputForHexbinFun)
+                    // Prepare a color palette
+                    var color = d3.scaleLinear()
+                        .domain([, 1000]) // Number of points in the bin?
+                        .range(["transparent", "#69b3a2"])
+
+                    // Compute the hexbin data
+                    var hexbin = d3.hexbin()
+                        .radius(20) // size of the bin in px
+                        .extent([
+                            [0, 0],
+                            [width, height]
+                        ])
+
+                    // Plot the hexbins
+                    svg.append("clipPath")
+                        .attr("id", "clip")
+                        .append("rect")
+                        .attr("width", width)
+                        .attr("height", height)
+
+                    svg.append("g")
+                        .attr("clip-path", "url(#clip)")
+                        .selectAll("path")
+                        .data(hexbin(inputForHexbinFun))
+                        .enter().append("path")
+                        .attr("d", hexbin.hexagon())
+                        .attr("transform", function (d) {
+                            return "translate(" + d.x + "," + d.y + ")";
+                        })
+                        .attr("fill", function (d) {
+                            return color(d.length);
+                        })
+                        .attr("stroke", "black")
+                        .attr("stroke-width", "0.1")
+                })
+        }
+
+        function getFXDYMax() {
+            return graphFXD.reduce((max, p) => {
+                if (max.constructor === ({}).constructor) {
+                    max = max.LeftScreenY
+                }
+                return Math.max(p.LeftScreenY, p.RightScreenY, max);
+            });
+        }
+
+        function getFXDXMax() {
+            return graphFXD.reduce((max, p) => {
+                if (max.constructor === ({}).constructor) {
+                    max = max.LeftScreenX
+                }
+                return Math.max(p.LeftScreenX, p.RightScreenX, max);
+            });
+        }
+
+        function getFXDXMin() {
+            return graphFXD.reduce((min, p) => {
+                if (min.constructor === ({}).constructor) {
+                    min = min.LeftScreenX
+                }
+                return Math.min(p.LeftScreenX, p.RightScreenX, min);
+            });
+        }
+
+        function getFXDYMin() {
+            return graphFXD.reduce((min, p) => {
+                if (min.constructor === ({}).constructor) {
+                    min = min.LeftScreenY
+                }
+                return Math.min(p.LeftScreenY, p.RightScreenY, min);
+            });
+        }
+    </script>
+
+</body>
+
+</html>
+
+
+
+<style>
+    /* Context Menu CSS */
+    .context-menu {
+        background-color: #2d2d2d;
+        padding: 5% 5% 5% 5%;
+    }
+
+    .menu * {
+        color: #ffffff !important;
+    }
+
+    .start {
+        display: block;
+    }
+
+    .default {
+        display: none;
+    }
+
+    .top-spacing {
+        margin-top: 2%;
+    }
+
+    /* Slider CSS */
+    .slider {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 100%;
+        height: 15px;
+        border-radius: 5px;
+        background: #d3d3d3;
+        outline: none;
+        opacity: 0.7;
+        -webkit-transition: .2s;
+        transition: opacity .2s;
+    }
+
+    .slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        background: #4CAF50;
+        cursor: pointer;
+    }
+
+    .slider::-moz-range-thumb {
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        background: #4CAF50;
+        cursor: pointer;
+    }
+
+    /* D3 Example Visualization */
+    .container-spacing {
+        margin-top: 10px;
+    }
+
+    img {
+        opacity: .5;
+        margin: 10px 30px 30px 40px;
+    }
+
+    #container {
+        position: relative;
+    }
+
+    #my_dataviz {
+        position: absolute;
+        top: 0;
+    }
+</style>
