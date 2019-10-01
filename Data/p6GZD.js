@@ -1,4 +1,4 @@
-baseline = [{
+baseline=[{
     "Time": "49",
     "Number": "3",
     "LeftScreenX": "707",
@@ -4128,23 +4128,6 @@ baseline = [{
     "RightCamY": "0.472",
     "RightDistance": "858.774",
     "RightPupil": "3.596",
-    "RightCode": "0"
-}, {
-    "Time": "5332",
-    "Number": "268",
-    "LeftScreenX": "-134",
-    "LeftScreenY": "518",
-    "LeftCamX": "0.624",
-    "LeftCamY": "0.485",
-    "LeftDistance": "864.905",
-    "LeftPupil": "11.467",
-    "LeftCode": "0",
-    "RightScreenX": "1394",
-    "RightScreenY": "415",
-    "RightCamX": "0.416",
-    "RightCamY": "0.472",
-    "RightDistance": "859.454",
-    "RightPupil": "9.373",
     "RightCode": "0"
 }, {
     "Time": "5412",
