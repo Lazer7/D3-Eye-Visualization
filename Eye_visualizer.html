@@ -383,66 +383,66 @@
 
     <!--script for graph visualization-->
     <script>
-        var slider = document.getElementById("timeline2");
-        var monitor = document.getElementById("monitor2");
-        var container = document.getElementById("container2");
-        var intervalHandler = undefined;
+        var slider2 = document.getElementById("timeline2");
+        var monitor2 = document.getElementById("monitor2");
+        var container2 = document.getElementById("container2");
+        var intervalHandler2 = undefined;
         // Setting slider to show 1 second per frame
-        slider.max = graphGZD.length;
+        slider2.max = graphGZD.length;
 
-        var maxY = getGZDYMax();
-        var maxX = getGZDXMax();
-        var minX = getGZDXMin();
-        var minY = getGZDYMin();
+        var maxY2 = getGZDYMax2();
+        var maxX2 = getGZDXMax2();
+        var minX2 = getGZDXMin2();
+        var minY2 = getGZDYMin2();
 
         function moveFrame2(value) {
-            if (intervalHandler !== undefined) {
+            if (intervalHandler2 !== undefined) {
                 document.getElementById("playericon2").innerHTML = "<i id='playericon2' class='fas fa-play'></i>";
-                clearInterval(intervalHandler);
-                intervalHandler = undefined;
+                clearInterval(intervalHandler2);
+                intervalHandler2 = undefined;
             }
-            slider.value = parseInt(slider.value) + value;
-            const percentage = 100 * (slider.value - slider.min) / (slider.max - slider.min);
+            slider2.value = parseInt(slider2.value) + value;
+            const percentage = 100 * (slider2.value - slider2.min) / (slider2.max - slider2.min);
             const bg = `linear-gradient(90deg, #3C97BF ${percentage}%, #d3d3d3 ${percentage+0.1}%)`;
-            slider.style.background = bg;
+            slider2.style.background = bg;
             d3.select("#graph_visualization").remove();
-            var svgContainer = document.createElement("DIV");
-            svgContainer.id = "graph_visualization"
-            container.appendChild(svgContainer)
-            createSVG2(slider.value - 1);
+            var svgContainer2 = document.createElement("DIV");
+            svgContainer2.id = "graph_visualization"
+            container2.appendChild(svgContainer2)
+            createSVG2(slider2.value - 1);
         }
 
         function play2() {
-            if (intervalHandler === undefined) {
+            if (intervalHandler2 === undefined) {
                 document.getElementById("playericon2").innerHTML = "<i id='playericon2' class='fas fa-pause'></i>";
-                intervalHandler = window.setInterval(() => {
-                    slider.value = parseInt(slider.value) + 1;
-                    const percentage = 100 * (slider.value - slider.min) / (slider.max - slider.min);
+                intervalHandler2 = window.setInterval(() => {
+                    slider2.value = parseInt(slider2.value) + 1;
+                    const percentage = 100 * (slider2.value - slider2.min) / (slider2.max - slider2.min);
                     const bg = `linear-gradient(90deg, #3C97BF ${percentage}%, #d3d3d3 ${percentage+0.1}%)`;
-                    slider.style.background = bg;
+                    slider2.style.background = bg;
                     d3.select("#graph_visualization").remove();
-                    var svgContainer = document.createElement("DIV");
-                    svgContainer.id = "graph_visualization"
-                    container.appendChild(svgContainer)
-                    createSVG2(slider.value - 1);
+                    var svgContainer2 = document.createElement("DIV");
+                    svgContainer2.id = "graph_visualization"
+                    container2.appendChild(svgContainer2)
+                    createSVG2(slider2.value - 1);
                 }, 500);
             } else {
                 document.getElementById("playericon2").innerHTML = "<i id='playericon2' class='fas fa-play'></i>";
-                clearInterval(intervalHandler);
-                intervalHandler = undefined;
+                clearInterval(intervalHandler2);
+                intervalHandler2 = undefined;
             }
         }
-        slider.addEventListener('input', () => {
+        slider2.addEventListener('input', () => {
             d3.select("#graph_visualization").remove();
-            var svgContainer = document.createElement("DIV");
-            svgContainer.id = "graph_visualization"
-            container.appendChild(svgContainer)
-            const percentage = 100 * (slider.value - slider.min) / (slider.max - slider.min);
+            var svgContainer2 = document.createElement("DIV");
+            svgContainer2.id = "graph_visualization"
+            container2.appendChild(svgContainer)
+            const percentage = 100 * (slider2.value - slider2.min) / (slider2.max - slider2.min);
             const bg = `linear-gradient(90deg, #3C97BF ${percentage}%, #d3d3d3 ${percentage+0.1}%)`;
-            slider.style.background = bg;
-            createSVG2(slider.value - 1);
+            slider2.style.background = bg;
+            createSVG2(slider2.value - 1);
         }, false);
-        createSVG2(slider.value - 1);
+        createSVG2(slider2.value - 1);
 
         // Defining Functions
         function createSVG2(value) {
@@ -453,8 +453,8 @@
                     bottom: 35,
                     left: 62
                 },
-                width = monitor.clientWidth,
-                height = monitor.clientHeight - margin.top - margin.bottom;
+                width = monitor2.clientWidth,
+                height = monitor2.clientHeight - margin.top - margin.bottom;
             // append the svg object to the body of the page
             var svg = d3.select("#graph_visualization")
                 .append("svg")
@@ -528,7 +528,7 @@
                 })
         }
 
-        function getGZDYMax() {
+        function getGZDYMax2() {
             return graphGZD.reduce((max, p) => {
                 if (max.constructor === ({}).constructor) {
                     max = max.LeftScreenY
@@ -537,7 +537,7 @@
             });
         }
 
-        function getGZDXMax() {
+        function getGZDXMax2() {
             return graphGZD.reduce((max, p) => {
                 if (max.constructor === ({}).constructor) {
                     max = max.LeftScreenX
@@ -546,7 +546,7 @@
             });
         }
 
-        function getGZDXMin() {
+        function getGZDXMin2() {
             return graphGZD.reduce((min, p) => {
                 if (min.constructor === ({}).constructor) {
                     min = min.LeftScreenX
@@ -555,7 +555,7 @@
             });
         }
 
-        function getGZDYMin() {
+        function getGZDYMin2() {
             return graphGZD.reduce((min, p) => {
                 if (min.constructor === ({}).constructor) {
                     min = min.LeftScreenY
