@@ -93,7 +93,6 @@
             </div>
             <!-- Graph D3 Visualization -->
             <div id="graph" class="default">
-                Graph
                 <div id="container2">
                     <div id="graph_visualization"></div>
                     <img src="https://render.fineartamerica.com/images/rendered/default/print/8.000/5.375/break/images-medium-5/computer-monitor-vector-icon-bdcreations.jpg"
@@ -491,6 +490,15 @@
                 y: parseInt(graphGZD[value].RightScreenY, 10),
                 color: '#00FF00'
             });
+
+            //fixation
+            // var fxd = [];
+            // var.push({
+            //   x: parseInt(graphFXD[value].ScreenX, 10),
+            //   y: parseInt(graphFXD[value].ScreenY, 10),
+            //   color: '#FF0000'
+            // });
+
             changePupil(right, graphGZD[value].RightPupil);
             changePupil(left, graphGZD[value].LeftPupil);
             // SVG Eye
