@@ -22,7 +22,7 @@
     <!-- specific plugin -->
     <script src="https://d3js.org/d3-hexbin.v0.2.min.js"></script>
     <!-- data -->
-    <script type="text/javascript" src="./Data/testingtreeFXD.js"></script>
+    <script type="text/javascript" src="./Data/testingtreeGZD.js"></script>
     <!-- <script type="text/javascript" src="./Data/p6GZD.js"></script> -->
     <!-- <script type="text/javascript" src="./Data/p6treeGZD.js"></script>
     <script type="text/javascript" src="./Data/p6treeFXD.js"></script> -->
@@ -311,19 +311,17 @@
             .call(d3.axisLeft(y));
 
         //xy coordinates for graph
-        // var gzdata = []
-        // testingtreeGZD.forEach(element => {
-        //     gzdata.push([element.RightScreenX, element.RightScreenY]);
-        //     gzdata.push([element.LeftScreenX, element.LeftScreenY]);
-        // })
+         var gzdata = []
+         testtreeGZD.forEach(element => {
+             gzdata.push([element.RightScreenX, element.RightScreenY]);
+             gzdata.push([element.LeftScreenX, element.LeftScreenY]);
+         })
 
-        var fxdata = []
-        testingtreeFXD.forEach(element => {
-            fxdata.push([element.ScreenX, element.ScreenY]);
-        })
+        //var fxdata = []
+        //testtreeFXD.forEach(element => {
+        //    fxdata.push([element.ScreenX, element.ScreenY]);
+        //})
 
-        // var timeframe = 10000
-        //
         // var fixdata = []
         // var gzddata = []
         // treeFXD.forEach(element => {
@@ -338,7 +336,7 @@
         // Add dots
         svg.append("g")
             .selectAll("dot")
-            .data(fxdata)
+            .data(gzdata)
             .enter()
             .append("circle")
             .attr("cx", function (d) {
