@@ -72,25 +72,28 @@
             <!-- Baseline D3 Visualization -->
             <div id="baseline" class="start top-spacing">
                 <div id="container">
+                    <img src="./Assets/monitor.png" id="monitor" width="80%" />
                     <div id="baseline_visualization"></div>
-                    <img src="https://render.fineartamerica.com/images/rendered/default/print/8.000/5.375/break/images-medium-5/computer-monitor-vector-icon-bdcreations.jpg"
-                        id="monitor" width="80%" />
                 </div>
 
                 <div class="container-spacing">
                     <input type="range" min="1" max="100" value="0" class="slider" id="timeline" width="80%">
                 </div>
+                <div class="columns">
+                    <div class="column is-2"></div>
+                    <div class="column has-text-centered container-spacing">
+                        <a class="button media_button" onclick="moveFrame(-1)"><i id="previous_icon"
+                                class="fa fa-angle-double-left"></i></a>
+                        <a class="button large-media_button" onclick="play()"><i id="playericon"
+                                class="fas fa-play"></i></a>
+                        <a class="button media_button" onclick="moveFrame(1)"><i id="next_icon"
+                                class="fa fa-angle-double-right"></i></a>
+                    </div>
+                    <div class="column is-2">
+                        <a class="button has-text-right container-spacing" onclick="toggleSummary(true)"> Show Summary
+                        </a>
+                    </div>
 
-                <div class="has-text-centered container-spacing">
-                    <a class="button media_button" onclick="moveFrame(-1)"><i id="previous_icon"
-                            class="fa fa-angle-double-left"></i></a>
-                    <a class="button large-media_button" onclick="play()"><i id="playericon"
-                            class="fas fa-play"></i></a>
-                    <a class="button media_button" onclick="moveFrame(1)"><i id="next_icon"
-                            class="fa fa-angle-double-right"></i></a>
-                </div>
-                <div class="has-text-centered">
-                    <a class="button media_button" onclick="toggleSummary(true)"> Show Summary </a>
                 </div>
 
             </div>
@@ -105,7 +108,7 @@
         </div>
         <!-- End of Visualization Code -->
         <!-- Start of Pupil Dialation -->
-        <div class="column is-3">
+        <div id="dialation_container" class="column is-3">
             <div id="left_eye_container" class="eye box has-text-centered">
                 <p class="title">Left Eye</p>
                 <p id="left_pupil_size" class="subtitle">Pupil Size: 0 mm</p>
@@ -174,11 +177,6 @@
                 " Visualization"
         }
     </script>
-    <!-- Embedded Javascript for Modal Summary -->
-    <script>
-        // NOTHING YET HOLD YOUR HORSES PEOPLE
-    </script>
-
     <!-- Embedded Javascript for Baseline visualization-->
     <script>
         var slider = document.getElementById("timeline");
@@ -203,7 +201,7 @@
             svgContainer.id = "baseline_visualization"
             container.appendChild(svgContainer)
             const percentage = 100 * (slider.value - slider.min) / (slider.max - slider.min);
-            const bg = `linear-gradient(90deg, #3C97BF ${percentage}%, #d3d3d3 ${percentage+0.1}%)`;
+            const bg = `linear-gradient(90deg, #50806a ${percentage}%, #d3d3d3 ${percentage+0.1}%)`;
             slider.style.background = bg;
             createSVG(slider.value - 1);
         }, false);
@@ -288,6 +286,10 @@
                 .attr("transform", function (d) {
                     return 'translate(' + (x(d.x)) + ',' + (y(d.y)) + ')';
                 })
+
+            d3.selectAll("text").attr("fill", "#FFFFFF")
+                .attr("font-weight", "bold")
+                .attr("opacity", "1.0");
         }
 
         function moveFrame(value) {
@@ -487,6 +489,15 @@
 
 
 <style>
+    html {
+        background-image: linear-gradient(#78bf9f, #d6deaf);
+    }
+
+    .columns {
+        margin-bottom: 0 !important;
+        padding-bottom: 0 !important;
+    }
+
     /* Context Menu CSS */
     .context-menu {
         background-color: #2d2d2d;
@@ -541,17 +552,30 @@
         cursor: pointer;
     }
 
+    .fa-play,
+    .fa-angle-double-right,
+    .fa-angle-double-left {
+        color: #FFFFFF;
+    }
+
+    .button {
+        background-color: #50806a;
+        color: white;
+    }
+
     .large-media_button {
         border-radius: 100%;
         font-size: 40px;
         margin-left: 10px;
         margin-right: 10px;
+
     }
 
     .media_button {
         border-radius: 100%;
         font-size: 25px;
         top: 20px;
+
     }
 
     /* D3 Example Visualization */
@@ -577,8 +601,8 @@
     .eye {
         margin: 10% 2% 0% 2%;
         position: relative;
-        border-style: solid;
-        border-width: 20px;
+        border: 20px solid rgba(0, 0, 0, .75);
+        background-color: rgba(0, 0, 0, 0)
     }
 
     div.tooltip {
