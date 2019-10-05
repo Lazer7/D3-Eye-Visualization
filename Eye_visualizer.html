@@ -90,7 +90,7 @@
                                 class="fa fa-angle-double-right"></i></a>
                     </div>
                     <div class="column is-2">
-                        <a class="button has-text-right container-spacing" onclick="toggleSummary(true)"> Show Summary
+                        <a class="button has-text-right container-spacing" onclick="toggleSummary(true,'baseline')"> Show Summary
                         </a>
                     </div>
 
@@ -370,7 +370,7 @@
     <!-- Embedded Javascript for the Summary Screen -->
     <script>
         // Defining Functions
-        function createSummary() {
+        function createBaselineSummary() {
             // set the dimensions and margins of the graph
             var margin = {
                     top: 10,
@@ -466,11 +466,19 @@
 
         }
 
-        function toggleSummary(value) {
+        function toggleSummary(value, option) {
             var modal = document.getElementById("summary_modal");
             if (value) {
                 modal.className = "modal is-active";
-                createSummary();
+                switch (option) {
+                    case "baseline":
+                        createBaselineSummary();
+                        break;
+                    case "graph":
+                        break;
+                    case "tree":
+                        break;
+                }
             } else {
                 modal.className = "modal";
                 d3.select("#summary_visualization").remove();
