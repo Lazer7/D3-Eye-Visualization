@@ -435,7 +435,7 @@
             d3.select("#graph_visualization").remove();
             var svgContainer2 = document.createElement("DIV");
             svgContainer2.id = "graph_visualization"
-            container2.appendChild(svgContainer)
+            container2.appendChild(svgContainer2)
             const percentage = 100 * (slider2.value - slider2.min) / (slider2.max - slider2.min);
             const bg = `linear-gradient(90deg, #3C97BF ${percentage}%, #d3d3d3 ${percentage+0.1}%)`;
             slider2.style.background = bg;
@@ -479,38 +479,40 @@
             svg.append("g")
                 .call(d3.axisLeft(y));
             // Formatting data
-            var plots = [];
-            plots.push({
+            var plots2 = [];
+            plots2.push({
                 x: parseInt(graphGZD[value].LeftScreenX, 10),
                 y: parseInt(graphGZD[value].LeftScreenY, 10),
                 color: '#FF0000'
             });
-            plots.push({
+            plots2.push({
                 x: parseInt(graphGZD[value].RightScreenX, 10),
                 y: parseInt(graphGZD[value].RightScreenY, 10),
                 color: '#00FF00'
             });
 
             //fixation
-            // var fxd = [];
-            // var.push({
-            //   x: parseInt(graphFXD[value].ScreenX, 10),
-            //   y: parseInt(graphFXD[value].ScreenY, 10),
-            //   color: '#FF0000'
-            // });
+            var fxd = [];
+            fxd.push({
+              x: parseInt(graphFXD[value].ScreenX, 10),
+              y: parseInt(graphFXD[value].ScreenY, 10),
+              color: '#0000FF'
+            });
 
             changePupil(right, graphGZD[value].RightPupil);
             changePupil(left, graphGZD[value].LeftPupil);
             // SVG Eye
             var eyeSVG =
                 "M15 12c0 1.654-1.346 3-3 3s-3-1.346-3-3 1.346-3 3-3 3 1.346 3 3zm9-.449s-4.252 8.449-11.985 8.449c-7.18 0-12.015-8.449-12.015-8.449s4.446-7.551 12.015-7.551c7.694 0 11.985 7.551 11.985 7.551zm-7 .449c0-2.757-2.243-5-5-5s-5 2.243-5 5 2.243 5 5 5 5-2.243 5-5z";
+           var fxdSVG =
+                "M12 0c6.623 0 12 5.377 12 12s-5.377 12-12 12-12-5.377-12-12 5.377-12 12-12zm0 1c6.071 0 11 4.929 11 11s-4.929 11-11 11-11-4.929-11-11 4.929-11 11-11zm.053 17c.466 0 .844-.378.844-.845 0-.466-.378-.844-.844-.844-.466 0-.845.378-.845.844 0 .467.379.845.845.845zm.468-2.822h-.998c-.035-1.162.182-2.054.939-2.943.491-.57 1.607-1.479 1.945-2.058.722-1.229.077-3.177-2.271-3.177-1.439 0-2.615.877-2.928 2.507l-1.018-.102c.28-2.236 1.958-3.405 3.922-3.405 1.964 0 3.615 1.25 3.615 3.22 0 1.806-1.826 2.782-2.638 3.868-.422.563-.555 1.377-.568 2.09z";
             // Define the div for the tooltip
             var div = d3.select("body").append("div")
                 .attr("class", "tooltip")
                 .style("opacity", 0);
 
             svg.selectAll(".eyes")
-                .data(plots)
+                .data(plots2)
                 .enter()
                 .append('path')
                 .attr("class", '.eyes')
@@ -533,6 +535,36 @@
                 })
                 .attr("transform", function (d) {
                     return 'translate(' + (x(d.x)) + ',' + (y(d.y)) + ')';
+                })
+
+            //plot fixation data
+            svg.selectAll(".fixed")
+                .data(fxd)
+                .enter()
+                .append('path')
+                .attr("class", '.fixed')
+                .attr("d", fxdSVG).on("mouseover", function (d) {
+                    div.transition()
+                        .duration(200)
+                        .style("opacity", .9);
+                    var type2 = d.color==="#0000FF";
+                    div.html("<div>"+type2+"</div>")
+                        .style("left", (d3.event.pageX) + "px")
+                        .style("top", (d3.event.pageY - 28) + "px");
+                })
+                .on("mouseout", function (d) {
+                    div.transition()
+                        .duration(500)
+                        .style("opacity", 0);
+                })
+            .style("fill", function (d) {
+                    return d.color;
+                })
+                .attr("transform", function (d) {
+                    return 'translate(' + (x(d.x)) + ',' + (y(d.y)) + ')';
+                })
+                .style("fill-rule", function(d){
+                  return 'evenodd';
                 })
         }
 
