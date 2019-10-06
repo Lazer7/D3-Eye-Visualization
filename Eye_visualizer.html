@@ -464,6 +464,7 @@
             var gazePlots = [];
             // makes object key:value pairs
             var lastGazePlot = {}
+            var fixationsPlotted = 5
             // plot first fixation point
             if (value === 0) {
                 fixationPlots.push({
@@ -491,19 +492,22 @@
                 })
             } else {
                 //plot last 5 fixation points
-                //if value - 4 < 0 then 0 otherwise value - 4
-                var startpoint = (value - 4) < 0 ? 0 : value - 4;
+                //if value - timeInterval < 0 then 0 otherwise value - timeInterval
+                var startpoint = (value - fixationsPlotted) < 0 ? 0 : value - fixationsPlotted;
                 for (startpoint; startpoint < value + 1; startpoint++) {
                     fixationPlots.push({
                         x: parseInt(treeFXD[startpoint].ScreenX, 10),
                         y: parseInt(treeFXD[startpoint].ScreenY, 10)
                     });
                 }
-                startpoint = (value - 4) < 0 ? 0 : value - 4;
+                startpoint = (value - fixationsPlotted) < 0 ? 0 : value - fixationsPlotted;
                 treeGZD.forEach(element => {
+                    //ends when gaze time is greater than current fixation
                     if ((currentFixation.Time - 0) < (element.Time - 0)) {
                         return;
                     }
+                    //starts from last ith fixation time
+                    //doesn't start until treeFXD time is less than element
                     if ((treeFXD[startpoint].Time - 0) < (element.Time - 0)) {
                         gazePlots.push({
                             x: parseInt(element.LeftScreenX, 10),
@@ -572,7 +576,7 @@
             d3.selectAll("text").attr("fill", "#FFFFFF")
                 .attr("font-weight", "bold")
                 .attr("opacity", "1.0");
-
+            //make the convex hull
             svg.selectAll("polygon")
                 .data([fixationPlots])
                 .enter().append("polygon")
@@ -594,10 +598,12 @@
             const percentage = 100 * (treeslider.value - treeslider.min) / (treeslider.max - treeslider.min);
             const bg = `linear-gradient(90deg, #3C97BF ${percentage}%, #d3d3d3 ${percentage+0.1}%)`;
             treeslider.style.background = bg;
+            //deleting old tree plots
             d3.select("#tree_visualization").remove();
             var svgContainer = document.createElement("DIV");
             svgContainer.id = "tree_visualization"
             treecontainer.appendChild(svgContainer)
+            //creating new tree plots
             createTreeSVG(treeslider.value - 1);
         }
 
