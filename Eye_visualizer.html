@@ -462,6 +462,7 @@
             var currentFixation = treeFXD[value];
             var fixationPlots = [];
             var gazePlots = [];
+            var lastGazePlot = {}
             if (value === 0) {
                 fixationPlots.push({
                     x: parseInt(currentFixation.ScreenX, 10),
@@ -481,6 +482,7 @@
                             y: parseInt(element.RightScreenY, 10),
                             color: '#00FF00'
                         });
+                        lastGazePlot =element;
                     }
                 })
             } else {
@@ -507,11 +509,12 @@
                             y: parseInt(element.RightScreenY, 10),
                             color: '#00FF00'
                         });
+                        lastGazePlot = element
                     }
                 })
             }
-            changePupil(right, treeGZD[value].RightPupil);
-            changePupil(left, treeGZD[value].LeftPupil);
+            changePupil(right, lastGazePlot.RightPupil);
+            changePupil(left, lastGazePlot.LeftPupil);
             // Sorting Fixation Points
             fixationPlots.sort((a, b) => {
                 return (a.x - b.x) + (a.y - b.y)
