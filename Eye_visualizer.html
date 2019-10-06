@@ -26,11 +26,11 @@
     <script type="text/javascript" src="./Data/p6GZD.js"></script>
     <script type="text/javascript" src="./Data/p6treeFXD.js"></script>
     <script type="text/javascript" src="./Data/p6treeGZD.js"></script>
-    <!-- <script type="text/javascript" src="./Data/p6graphGZD.js"></script> 
+    <!-- <script type="text/javascript" src="./Data/p6graphGZD.js"></script>
 
-<script type="text/javascript" src="./Data/p6graphFXD.js"></script> 
-    
-    <script type="text/javascript" src="./Data/p6graphEVD.js"></script> 
+<script type="text/javascript" src="./Data/p6graphFXD.js"></script>
+
+    <script type="text/javascript" src="./Data/p6graphEVD.js"></script>
     <script type="text/javascript" src="./Data/p6treeEVD.js"></script> -->
 </head>
 
@@ -242,7 +242,7 @@
                 },
                 width = baselinemonitor.clientWidth,
                 height = baselinemonitor.clientHeight - margin.top - margin.bottom;
-            // append the svg object to the body of the page 
+            // append the svg object to the body of the page
             var svg = d3.select("#baseline_visualization")
                 .append("svg")
                 .attr("width", width + margin.left + margin.right)
@@ -434,7 +434,7 @@
                 },
                 width = treemonitor.clientWidth,
                 height = treemonitor.clientHeight - margin.top - margin.bottom;
-            // append the svg object to the body of the page 
+            // append the svg object to the body of the page
             var svg = d3.select("#tree_visualization")
                 .append("svg")
                 .attr("width", width + margin.left + margin.right)
@@ -462,16 +462,20 @@
             var currentFixation = treeFXD[value];
             var fixationPlots = [];
             var gazePlots = [];
+            // makes object key:value pairs
             var lastGazePlot = {}
+            // plot first fixation point
             if (value === 0) {
                 fixationPlots.push({
                     x: parseInt(currentFixation.ScreenX, 10),
                     y: parseInt(currentFixation.ScreenY, 10)
                 })
                 treeGZD.forEach(element => {
+                    //if FXD time is less than GZD time exit
                     if ((currentFixation.Time - 0) < (element.Time - 0)) {
                         return;
                     } else {
+                        //plot GZD points less than FXD time
                         gazePlots.push({
                             x: parseInt(element.LeftScreenX, 10),
                             y: parseInt(element.LeftScreenY, 10),
@@ -486,6 +490,8 @@
                     }
                 })
             } else {
+                //plot last 5 fixation points
+                //if value - 4 < 0 then 0 otherwise value - 4
                 var startpoint = (value - 4) < 0 ? 0 : value - 4;
                 for (startpoint; startpoint < value + 1; startpoint++) {
                     fixationPlots.push({
@@ -671,7 +677,7 @@
                 },
                 width = 700,
                 height = 500;
-            // append the svg object to the body of the page 
+            // append the svg object to the body of the page
             var svg = d3.select("#summary_visualization")
                 .append("svg")
                 .attr("width", width + margin.left + margin.right)
