@@ -460,25 +460,54 @@
             var currentFixation = treeFXD[value];
             var fixationPlots = [];
             var gazePlots = [];
-
-
-            // Testing Plots
-            fixationPlots.push({
-                x: parseInt(currentFixation.ScreenX, 10),
-                y: parseInt(currentFixation.ScreenY, 10)
-            })
-            gazePlots.push({
-                x: parseInt(treeGZD[value].LeftScreenX, 10),
-                y: parseInt(treeGZD[value].LeftScreenY, 10),
-                color: '#FF0000'
-            });
-            gazePlots.push({
-                x: parseInt(treeGZD[value].RightScreenX, 10),
-                y: parseInt(treeGZD[value].RightScreenY, 10),
-                color: '#00FF00'
-            });
-
-
+            if (value === 0) {
+                fixationPlots.push({
+                    x: parseInt(currentFixation.ScreenX, 10),
+                    y: parseInt(currentFixation.ScreenY, 10)
+                })
+                treeGZD.forEach(element => {
+                    if ((currentFixation.Time - 0) < (element.Time - 0)) {
+                        return;
+                    } else {
+                        gazePlots.push({
+                            x: parseInt(element.LeftScreenX, 10),
+                            y: parseInt(element.LeftScreenY, 10),
+                            color: '#FF0000'
+                        });
+                        gazePlots.push({
+                            x: parseInt(element.RightScreenX, 10),
+                            y: parseInt(element.RightScreenY, 10),
+                            color: '#00FF00'
+                        });
+                    }
+                })
+            } else {
+                var startpoint = (value - 4) < 0 ? 0 : value - 4;
+                for (startpoint; startpoint < value+1; startpoint++) {
+                    fixationPlots.push({
+                        x: parseInt(treeFXD[startpoint].ScreenX, 10),
+                        y: parseInt(treeFXD[startpoint].ScreenY, 10)
+                    });
+                }
+                startpoint = (value - 4) < 0 ? 0 : value - 4;
+                treeGZD.forEach(element => {
+                    if ((currentFixation.Time - 0) < (element.Time - 0)) {
+                        return;
+                    }
+                    if ((treeFXD[startpoint].Time - 0) < (element.Time - 0)) {
+                        gazePlots.push({
+                            x: parseInt(element.LeftScreenX, 10),
+                            y: parseInt(element.LeftScreenY, 10),
+                            color: '#FF0000'
+                        });
+                        gazePlots.push({
+                            x: parseInt(element.RightScreenX, 10),
+                            y: parseInt(element.RightScreenY, 10),
+                            color: '#00FF00'
+                        });
+                    }
+                })
+            }
             changePupil(right, treeGZD[value].RightPupil);
             changePupil(left, treeGZD[value].LeftPupil);
 
@@ -518,7 +547,8 @@
                 .enter()
                 .append('path')
                 .attr("class", '.fixedeyes')
-                // .attr("d", eyeSVG).on("mouseover", function (d) {
+                .attr("d", eyeSVG)
+                // .on("mouseover", function (d) {
                 //     div.transition()
                 //         .duration(200)
                 //         .style("opacity", .9);
@@ -544,7 +574,8 @@
 
         function moveFrameTree(value) {
             if (treeintervalHandler !== undefined) {
-                document.getElementById("playericon_tree").innerHTML = "<i id='playericon_tree' class='fas fa-play'></i>";
+                document.getElementById("playericon_tree").innerHTML =
+                    "<i id='playericon_tree' class='fas fa-play'></i>";
                 clearInterval(treeintervalHandler);
                 treeintervalHandler = undefined;
             }
@@ -561,7 +592,8 @@
 
         function playTree() {
             if (treeintervalHandler === undefined) {
-                document.getElementById("playericon_tree").innerHTML = "<i id='playericon_tree' class='fas fa-pause'></i>";
+                document.getElementById("playericon_tree").innerHTML =
+                    "<i id='playericon_tree' class='fas fa-pause'></i>";
                 treeintervalHandler = window.setInterval(() => {
                     treeslider.value = parseInt(treeslider.value) + 1;
                     const percentage = 100 * (treeslider.value - treeslider.min) / (treeslider.max - treeslider
@@ -575,7 +607,8 @@
                     createTreeSVG(treeslider.value - 1);
                 }, 500);
             } else {
-                document.getElementById("playericon_tree").innerHTML = "<i id='playericon_tree' class='fas fa-play'></i>";
+                document.getElementById("playericon_tree").innerHTML =
+                    "<i id='playericon_tree' class='fas fa-play'></i>";
                 clearInterval(treeintervalHandler);
                 treeintervalHandler = undefined;
             }
