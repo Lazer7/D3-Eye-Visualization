@@ -29,25 +29,30 @@
     <script type="text/javascript" src="./Data/p6graphFXD.js"></script>
     <!-- <script type="text/javascript" src="./Data/p6treeGZD.js"></script>
     <script type="text/javascript" src="./Data/p6treeFXD.js"></script>
+    <script type="text/javascript" src="./Data/p6treeGZD.js"></script>
+    <!-- <script type="text/javascript" src="./Data/p6graphGZD.js"></script>
+
+<script type="text/javascript" src="./Data/p6graphFXD.js"></script>
+
     <script type="text/javascript" src="./Data/p6graphEVD.js"></script>
     <script type="text/javascript" src="./Data/p6treeEVD.js"></script> -->
 </head>
 
 <body>
-  <!-- Modal Summary Code -->
-  <div id="summary_modal" class="modal">
-      <div class="modal-background"></div>
-      <div class="modal-card">
-          <header class="modal-card-head">
-              <p class="modal-card-title">Summary</p>
-              <button class="delete" aria-label="close" onclick="toggleSummary(false)"></button>
-          </header>
-          <section id="summary_holder" class="modal-card-body">
-              <!-- Content ... -->
-              <div id="summary_visualization"></div>
-          </section>
-      </div>
-  </div>
+    <!-- Modal Summary Code -->
+    <div id="summary_modal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Summary</p>
+                <button class="delete" aria-label="close" onclick="toggleSummary(false)"></button>
+            </header>
+            <section id="summary_holder" class="modal-card-body">
+                <!-- Content ... -->
+                <div id="summary_visualization"></div>
+            </section>
+        </div>
+    </div>
 
     <div class="columns">
         <!-- This section is the context menu html -->
@@ -72,25 +77,31 @@
             <div id="current_visualization" class="title">Baseline Visualization</div>
             <!-- Baseline D3 Visualization -->
             <div id="baseline" class="start top-spacing">
-                <div id="container">
+                <div id="baseline_container">
+                    <img id="baseline_monitor" src="./Assets/monitor.png" width="80%" />
                     <div id="baseline_visualization"></div>
-                    <img src="https://render.fineartamerica.com/images/rendered/default/print/8.000/5.375/break/images-medium-5/computer-monitor-vector-icon-bdcreations.jpg"
-                        id="monitor" width="80%" />
                 </div>
 
                 <div class="container-spacing">
-                    <input type="range" min="1" max="100" value="0" class="slider" id="timeline" width="80%">
+                    <input id="baseline_timeline" type="range" min="1" max="100" value="0" class="slider" width="80%">
+                </div>
+                <div class="columns">
+                    <div class="column is-2"></div>
+                    <div class="column has-text-centered container-spacing">
+                        <a class="button media_button" onclick="moveFrameBaseline(-1)"><i id="previous_icon"
+                                class="fa fa-angle-double-left"></i></a>
+                        <a class="button large-media_button" onclick="playBaseline()"><i id="playericon"
+                                class="fas fa-play"></i></a>
+                        <a class="button media_button" onclick="moveFrameBaseline(1)"><i id="next_icon"
+                                class="fa fa-angle-double-right"></i></a>
+                    </div>
+                    <div class="column is-2">
+                        <a class="button has-text-right container-spacing" onclick="toggleSummary(true,'baseline')">
+                            Show Summary
+                        </a>
+                    </div>
                 </div>
 
-                <div class="has-text-centered container-spacing">
-                    <a class="button media_button" onclick="moveFrame(-1)"><i id="previous_icon"
-                            class="fa fa-angle-double-left"></i></a>
-                    <a class="button large-media_button" onclick="play()"><i id="playericon"
-                            class="fas fa-play"></i></a>
-                    <a class="button media_button" onclick="moveFrame(1)"><i id="next_icon"
-                            class="fa fa-angle-double-right"></i></a>
-
-                </div>
             </div>
             <!-- Graph D3 Visualization -->
             <div id="graph" class="default">
@@ -124,13 +135,35 @@
 
             <!-- Tree D3 Visualization -->
             <div id="tree" class="default">
-                Tree
-                <div id="treeviz"></div>
+                <div id="tree_container">
+                    <img id="tree_monitor" src="./Assets/monitor.png" width="80%" />
+                    <div id="tree_visualization"></div>
+                </div>
+
+                <div class="container-spacing">
+                    <input id="tree_timeline" type="range" min="1" max="100" value="0" class="slider" width="80%">
+                </div>
+                <div class="columns">
+                    <div class="column is-2"></div>
+                    <div class="column has-text-centered container-spacing">
+                        <a class="button media_button" onclick="moveFrameTree(-1)">
+                            <i id="previous_icon_tree" class="fa fa-angle-double-left"></i></a>
+                        <a class="button large-media_button" onclick="playTree()">
+                            <i id="playericon_tree" class="fas fa-play"></i></a>
+                        <a class="button media_button" onclick="moveFrameTree(1)">
+                            <i id="next_icon_tree" class="fa fa-angle-double-right"></i></a>
+                    </div>
+                    <div class="column is-2">
+                        <a class="button has-text-right container-spacing" onclick="toggleSummary(true,'tree')">
+                            Show Summary
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
         <!-- End of Visualization Code -->
         <!-- Start of Pupil Dialation -->
-        <div class="column is-3">
+        <div id="dialation_container" class="column is-3">
             <div id="left_eye_container" class="eye box has-text-centered">
                 <p class="title">Left Eye</p>
                 <p id="left_pupil_size" class="subtitle">Pupil Size: 0 mm</p>
@@ -174,7 +207,7 @@
             // Drawing the Iris
             ctx.save();
             ctx.beginPath();
-            ctx.fillStyle = side===left?'#FF0000':'#00FF00';
+            ctx.fillStyle = side === left ? '#FF0000' : '#00FF00';
             ctx.arc(startX, startY, 26, startAngle, endAngle, 0);
             ctx.fill();
             ctx.closePath();
@@ -199,76 +232,38 @@
                 " Visualization"
         }
     </script>
-    <!-- Embedded Javascript for Modal Summary -->
-    <script>
-        // NOTHING YET HOLD YOUR HORSES PEOPLE
-    </script>
-
     <!-- Embedded Javascript for Baseline visualization-->
     <script>
-        var slider = document.getElementById("timeline");
-        var monitor = document.getElementById("monitor");
-        var container = document.getElementById("container");
-        var intervalHandler = undefined;
+        var baselineslider = document.getElementById("baseline_timeline");
+        var baselinemonitor = document.getElementById("baseline_monitor");
+        var baselinecontainer = document.getElementById("baseline_container");
+        var baselineintervalHandler = undefined;
+        // SVG Eye
+        var eyeSVG =
+            "M15 12c0 1.654-1.346 3-3 3s-3-1.346-3-3 1.346-3 3-3 3 1.346 3 3zm9-.449s-4.252 8.449-11.985 8.449c-7.18 0-12.015-8.449-12.015-8.449s4.446-7.551 12.015-7.551c7.694 0 11.985 7.551 11.985 7.551zm-7 .449c0-2.757-2.243-5-5-5s-5 2.243-5 5 2.243 5 5 5 5-2.243 5-5z";
         // Setting slider to show 1 second per frame
-        slider.max = baseline.length;
+        baselineslider.max = baseline.length;
 
-        var maxY = getGZDYMax();
-        var maxX = getGZDXMax();
-        var minX = getGZDXMin();
-        var minY = getGZDYMin();
+        var maxBaseY = getBaseGZDYMax();
+        var maxBaseX = getBaseGZDXMax();
+        var minBaseX = getBaseGZDXMin();
+        var minBaseY = getBaseGZDYMin();
 
-        function moveFrame(value) {
-            if (intervalHandler !== undefined) {
-                document.getElementById("playericon").innerHTML = "<i id='playericon' class='fas fa-play'></i>";
-                clearInterval(intervalHandler);
-                intervalHandler = undefined;
-            }
-            slider.value = parseInt(slider.value) + value;
-            const percentage = 100 * (slider.value - slider.min) / (slider.max - slider.min);
-            const bg = `linear-gradient(90deg, #3C97BF ${percentage}%, #d3d3d3 ${percentage+0.1}%)`;
-            slider.style.background = bg;
+
+        baselineslider.addEventListener('input', () => {
             d3.select("#baseline_visualization").remove();
             var svgContainer = document.createElement("DIV");
             svgContainer.id = "baseline_visualization"
-            container.appendChild(svgContainer)
-            createSVG(slider.value - 1);
-        }
-
-        function play() {
-            if (intervalHandler === undefined) {
-                document.getElementById("playericon").innerHTML = "<i id='playericon' class='fas fa-pause'></i>";
-                intervalHandler = window.setInterval(() => {
-                    slider.value = parseInt(slider.value) + 1;
-                    const percentage = 100 * (slider.value - slider.min) / (slider.max - slider.min);
-                    const bg = `linear-gradient(90deg, #3C97BF ${percentage}%, #d3d3d3 ${percentage+0.1}%)`;
-                    slider.style.background = bg;
-                    d3.select("#baseline_visualization").remove();
-                    var svgContainer = document.createElement("DIV");
-                    svgContainer.id = "baseline_visualization"
-                    container.appendChild(svgContainer)
-                    createSVG(slider.value - 1);
-                }, 500);
-            } else {
-                document.getElementById("playericon").innerHTML = "<i id='playericon' class='fas fa-play'></i>";
-                clearInterval(intervalHandler);
-                intervalHandler = undefined;
-            }
-        }
-        slider.addEventListener('input', () => {
-            d3.select("#baseline_visualization").remove();
-            var svgContainer = document.createElement("DIV");
-            svgContainer.id = "baseline_visualization"
-            container.appendChild(svgContainer)
-            const percentage = 100 * (slider.value - slider.min) / (slider.max - slider.min);
-            const bg = `linear-gradient(90deg, #3C97BF ${percentage}%, #d3d3d3 ${percentage+0.1}%)`;
-            slider.style.background = bg;
-            createSVG(slider.value - 1);
+            baselinecontainer.appendChild(svgContainer)
+            const percentage = 100 * (baselineslider.value - baselineslider.min) / (baselineslider.max -
+                baselineslider.min);
+            const bg = `linear-gradient(90deg, #50806a ${percentage}%, #d3d3d3 ${percentage+0.1}%)`;
+            baselineslider.style.background = bg;
+            createBaselineSVG(baselineslider.value - 1);
         }, false);
-        createSVG(slider.value - 1);
+        createBaselineSVG(baselineslider.value - 1);
 
-        // Defining Functions
-        function createSVG(value) {
+        function createBaselineSVG(value) {
             // set the dimensions and margins of the graph
             var margin = {
                     top: 100,
@@ -276,8 +271,8 @@
                     bottom: 35,
                     left: 62
                 },
-                width = monitor.clientWidth,
-                height = monitor.clientHeight - margin.top - margin.bottom;
+                width = baselinemonitor.clientWidth,
+                height = baselinemonitor.clientHeight - margin.top - margin.bottom;
             // append the svg object to the body of the page
             var svg = d3.select("#baseline_visualization")
                 .append("svg")
@@ -290,7 +285,7 @@
 
             // Add X axis
             var x = d3.scaleLinear()
-                .domain([minX, maxX])
+                .domain([minBaseX, maxBaseX])
                 .range([0, width]);
             svg.append("g")
                 .attr("transform", "translate(" + 0 + "," + (height - 15) + ")")
@@ -298,7 +293,7 @@
 
             // Add Y axis
             var y = d3.scaleLinear()
-                .domain([minY, maxY + 100])
+                .domain([minBaseY, maxBaseY + 100])
                 .range([height, 0]);
             svg.append("g")
                 .call(d3.axisLeft(y));
@@ -316,12 +311,10 @@
             });
             changePupil(right, baseline[value].RightPupil);
             changePupil(left, baseline[value].LeftPupil);
-            // SVG Eye
-            var eyeSVG =
-                "M15 12c0 1.654-1.346 3-3 3s-3-1.346-3-3 1.346-3 3-3 3 1.346 3 3zm9-.449s-4.252 8.449-11.985 8.449c-7.18 0-12.015-8.449-12.015-8.449s4.446-7.551 12.015-7.551c7.694 0 11.985 7.551 11.985 7.551zm-7 .449c0-2.757-2.243-5-5-5s-5 2.243-5 5 2.243 5 5 5 5-2.243 5-5z";
+
             // Define the div for the tooltip
             var div = d3.select("body").append("div")
-                .attr("class", "tooltip")
+                .attr("class", "tooltipbaseline")
                 .style("opacity", 0);
 
             svg.selectAll(".eyes")
@@ -333,8 +326,10 @@
                     div.transition()
                         .duration(200)
                         .style("opacity", .9);
-                    var type = d.color==="#00FF00"? "Right Eye" : "Left Eye";
-                    div.html("<div>"+type+"</div>")
+                    var type = d.color === "#00FF00" ? "Right Eye" : "Left Eye";
+                    div.html("<div>" + type + "</div>" +
+                            "<div>X: " + d.x + "</div>" +
+                            "<div>Y: " + d.y + "</div>")
                         .style("left", (d3.event.pageX) + "px")
                         .style("top", (d3.event.pageY - 28) + "px");
                 })
@@ -343,15 +338,59 @@
                         .duration(500)
                         .style("opacity", 0);
                 })
-            .style("fill", function (d) {
+                .style("fill", function (d) {
                     return d.color;
                 })
                 .attr("transform", function (d) {
                     return 'translate(' + (x(d.x)) + ',' + (y(d.y)) + ')';
                 })
+
+            d3.selectAll("text").attr("fill", "#FFFFFF")
+                .attr("font-weight", "bold")
+                .attr("opacity", "1.0");
         }
 
-        function getGZDYMax() {
+        function moveFrameBaseline(value) {
+            if (baselineintervalHandler !== undefined) {
+                document.getElementById("playericon").innerHTML = "<i id='playericon' class='fas fa-play'></i>";
+                clearInterval(baselineintervalHandler);
+                baselineintervalHandler = undefined;
+            }
+            baselineslider.value = parseInt(baselineslider.value) + value;
+            const percentage = 100 * (baselineslider.value - baselineslider.min) / (baselineslider.max - baselineslider
+                .min);
+            const bg = `linear-gradient(90deg, #3C97BF ${percentage}%, #d3d3d3 ${percentage+0.1}%)`;
+            baselineslider.style.background = bg;
+            d3.select("#baseline_visualization").remove();
+            var svgContainer = document.createElement("DIV");
+            svgContainer.id = "baseline_visualization"
+            baselinecontainer.appendChild(svgContainer)
+            createBaselineSVG(baselineslider.value - 1);
+        }
+
+        function playBaseline() {
+            if (baselineintervalHandler === undefined) {
+                document.getElementById("playericon").innerHTML = "<i id='playericon' class='fas fa-pause'></i>";
+                baselineintervalHandler = window.setInterval(() => {
+                    baselineslider.value = parseInt(baselineslider.value) + 1;
+                    const percentage = 100 * (baselineslider.value - baselineslider.min) / (baselineslider.max -
+                        baselineslider.min);
+                    const bg = `linear-gradient(90deg, #3C97BF ${percentage}%, #d3d3d3 ${percentage+0.1}%)`;
+                    baselineslider.style.background = bg;
+                    d3.select("#baseline_visualization").remove();
+                    var svgContainer = document.createElement("DIV");
+                    svgContainer.id = "baseline_visualization"
+                    baselinecontainer.appendChild(svgContainer)
+                    createBaselineSVG(baselineslider.value - 1);
+                }, 500);
+            } else {
+                document.getElementById("playericon").innerHTML = "<i id='playericon' class='fas fa-play'></i>";
+                clearInterval(baselineintervalHandler);
+                baselineintervalHandler = undefined;
+            }
+        }
+
+        function getBaseGZDYMax() {
             return baseline.reduce((max, p) => {
                 if (max.constructor === ({}).constructor) {
                     max = max.LeftScreenY
@@ -360,7 +399,7 @@
             });
         }
 
-        function getGZDXMax() {
+        function getBaseGZDXMax() {
             return baseline.reduce((max, p) => {
                 if (max.constructor === ({}).constructor) {
                     max = max.LeftScreenX
@@ -369,7 +408,7 @@
             });
         }
 
-        function getGZDXMin() {
+        function getBaseGZDXMin() {
             return baseline.reduce((min, p) => {
                 if (min.constructor === ({}).constructor) {
                     min = min.LeftScreenX
@@ -378,7 +417,7 @@
             });
         }
 
-        function getGZDYMin() {
+        function getBaseGZDYMin() {
             return baseline.reduce((min, p) => {
                 if (min.constructor === ({}).constructor) {
                     min = min.LeftScreenY
@@ -388,12 +427,19 @@
         }
     </script>
 
+
     <!--script for graph visualization-->
     <script>
         var slider2 = document.getElementById("timeline2");
         var monitor2 = document.getElementById("monitor2");
         var container2 = document.getElementById("container2");
         var intervalHandler2 = undefined;
+
+        // SVG Eye
+        var eyeSVG =
+            "M15 12c0 1.654-1.346 3-3 3s-3-1.346-3-3 1.346-3 3-3 3 1.346 3 3zm9-.449s-4.252 8.449-11.985 8.449c-7.18 0-12.015-8.449-12.015-8.449s4.446-7.551 12.015-7.551c7.694 0 11.985 7.551 11.985 7.551zm-7 .449c0-2.757-2.243-5-5-5s-5 2.243-5 5 2.243 5 5 5 5-2.243 5-5z";
+        var fxdSVG =
+            "M12 0c6.623 0 12 5.377 12 12s-5.377 12-12 12-12-5.377-12-12 5.377-12 12-12zm0 1c6.071 0 11 4.929 11 11s-4.929 11-11 11-11-4.929-11-11 4.929-11 11-11zm.053 17c.466 0 .844-.378.844-.845 0-.466-.378-.844-.844-.844-.466 0-.845.378-.845.844 0 .467.379.845.845.845zm.468-2.822h-.998c-.035-1.162.182-2.054.939-2.943.491-.57 1.607-1.479 1.945-2.058.722-1.229.077-3.177-2.271-3.177-1.439 0-2.615.877-2.928 2.507l-1.018-.102c.28-2.236 1.958-3.405 3.922-3.405 1.964 0 3.615 1.25 3.615 3.22 0 1.806-1.826 2.782-2.638 3.868-.422.563-.555 1.377-.568 2.09z";
         // Setting slider to show 1 second per frame
         slider2.max = graphGZD.length;
 
@@ -401,6 +447,19 @@
         var maxX2 = getGZDXMax2();
         var minX2 = getGZDXMin2();
         var minY2 = getGZDYMin2();
+
+        slider2.addEventListener('input', () => {
+            d3.select("#graph_visualization").remove();
+            var svgContainer2 = document.createElement("DIV");
+            svgContainer2.id = "graph_visualization"
+            container2.appendChild(svgContainer2)
+            const percentage = 100 * (slider2.value - slider2.min) / (slider2.max - slider2.min);
+            const bg = `linear-gradient(90deg, #3C97BF ${percentage}%, #d3d3d3 ${percentage+0.1}%)`;
+            slider2.style.background = bg;
+            createSVG2(slider2.value - 1);
+        }, false);
+        createSVG2(slider2.value - 1);
+
 
         function moveFrame2(value) {
             if (intervalHandler2 !== undefined) {
@@ -439,17 +498,7 @@
                 intervalHandler2 = undefined;
             }
         }
-        slider2.addEventListener('input', () => {
-            d3.select("#graph_visualization").remove();
-            var svgContainer2 = document.createElement("DIV");
-            svgContainer2.id = "graph_visualization"
-            container2.appendChild(svgContainer2)
-            const percentage = 100 * (slider2.value - slider2.min) / (slider2.max - slider2.min);
-            const bg = `linear-gradient(90deg, #3C97BF ${percentage}%, #d3d3d3 ${percentage+0.1}%)`;
-            slider2.style.background = bg;
-            createSVG2(slider2.value - 1);
-        }, false);
-        createSVG2(slider2.value - 1);
+
 
         // Defining Functions
         function createSVG2(value) {
@@ -474,7 +523,7 @@
 
             // Add X axis
             var x = d3.scaleLinear()
-                .domain([minX, maxX])
+                .domain([minX2, maxX2])
                 .range([0, width]);
             svg.append("g")
                 .attr("transform", "translate(" + 0 + "," + (height - 15) + ")")
@@ -482,63 +531,89 @@
 
             // Add Y axis
             var y = d3.scaleLinear()
-                .domain([minY, maxY + 100])
+                .domain([minY2, maxY2 + 100])
                 .range([height, 0]);
             svg.append("g")
                 .call(d3.axisLeft(y));
-            // Formatting data
-            var plots2 = [];
-            plots2.push({
-                x: parseInt(graphGZD[value].LeftScreenX, 10),
-                y: parseInt(graphGZD[value].LeftScreenY, 10),
-                color: '#FF0000'
-            });
-            plots2.push({
-                x: parseInt(graphGZD[value].RightScreenX, 10),
-                y: parseInt(graphGZD[value].RightScreenY, 10),
-                color: '#00FF00'
-            });
 
-            //fixation
+            var currentGraphFXD = graphFXD[value];
             var fxd = [];
-            fxd.push({
-              x: parseInt(graphFXD[value].ScreenX, 10),
-              y: parseInt(graphFXD[value].ScreenY, 10),
-              color: '#0000FF'
-            });
+            // Formatting data
+            var graphPlots = [];
+            var lastGZD = {};
+            if (value === 0) {
+                fxd.push({
+                    x: parseInt(currentFixation.ScreenX, 10),
+                    y: parseInt(currentFixation.ScreenY, 10),
+                    color: '#0000FF'
+                })
+                graphGZD.forEach(element => {
+                    if ((currentFixation.Time - 0) < (element.Time - 0)) {
+                        return;
+                    } else {
+                        graphPlots.push({
+                            x: parseInt(element.LeftScreenX, 10),
+                            y: parseInt(element.LeftScreenY, 10),
+                            color: '#FF0000'
+                        });
+                        graphPlots.push({
+                            x: parseInt(element.RightScreenX, 10),
+                            y: parseInt(element.RightScreenY, 10),
+                            color: '#00FF00'
+                        });
+                        lastGZD =element;
+                    }
+                })
+            } else {
+                var startpointGraph = (value - 4) < 0 ? 0 : value - 4;
+                for (startpointGraph; startpointGraph < value + 1; startpointGraph++) {
+                    fxd.push({
+                        x: parseInt(graphFXD[startpoint].ScreenX, 10),
+                        y: parseInt(graph[startpoint].ScreenY, 10),
+                        color: '#0000FF'
+                    });
+                }
+                startpointGraph = (value - 4) < 0 ? 0 : value - 4;
+                graphGZD.forEach(element => {
+                    if ((currentGraphFXD.Time - 0) < (element.Time - 0)) {
+                        return;
+                    }
+                    if ((graphFXD[startpointGraph].Time - 0) < (element.Time - 0)) {
+                        graphPlots.push({
+                            x: parseInt(element.LeftScreenX, 10),
+                            y: parseInt(element.LeftScreenY, 10),
+                            color: '#FF0000'
+                        });
+                        graphPlots.push({
+                            x: parseInt(element.RightScreenX, 10),
+                            y: parseInt(element.RightScreenY, 10),
+                            color: '#00FF00'
+                        });
+                        lastGZD = element
+                    }
+                })
+            }
 
             changePupil(right, graphGZD[value].RightPupil);
             changePupil(left, graphGZD[value].LeftPupil);
-            // SVG Eye
-            var eyeSVG =
-                "M15 12c0 1.654-1.346 3-3 3s-3-1.346-3-3 1.346-3 3-3 3 1.346 3 3zm9-.449s-4.252 8.449-11.985 8.449c-7.18 0-12.015-8.449-12.015-8.449s4.446-7.551 12.015-7.551c7.694 0 11.985 7.551 11.985 7.551zm-7 .449c0-2.757-2.243-5-5-5s-5 2.243-5 5 2.243 5 5 5 5-2.243 5-5z";
-           var fxdSVG =
-                "M12 0c6.623 0 12 5.377 12 12s-5.377 12-12 12-12-5.377-12-12 5.377-12 12-12zm0 1c6.071 0 11 4.929 11 11s-4.929 11-11 11-11-4.929-11-11 4.929-11 11-11zm.053 17c.466 0 .844-.378.844-.845 0-.466-.378-.844-.844-.844-.466 0-.845.378-.845.844 0 .467.379.845.845.845zm.468-2.822h-.998c-.035-1.162.182-2.054.939-2.943.491-.57 1.607-1.479 1.945-2.058.722-1.229.077-3.177-2.271-3.177-1.439 0-2.615.877-2.928 2.507l-1.018-.102c.28-2.236 1.958-3.405 3.922-3.405 1.964 0 3.615 1.25 3.615 3.22 0 1.806-1.826 2.782-2.638 3.868-.422.563-.555 1.377-.568 2.09z";
+
+            //sorting fixation Points
+            fxd.sort((a,b)=>{
+              return (a.x-b.x)+(a.y-b.y)
+            })
+
             // Define the div for the tooltip
             var div = d3.select("body").append("div")
                 .attr("class", "tooltip")
                 .style("opacity", 0);
 
             svg.selectAll(".eyes")
-                .data(plots2)
+                .data(graphPlots)
                 .enter()
                 .append('path')
                 .attr("class", '.eyes')
-                .attr("d", eyeSVG).on("mouseover", function (d) {
-                    div.transition()
-                        .duration(200)
-                        .style("opacity", .9);
-                    var type = d.color==="#00FF00"? "Right Eye" : "Left Eye";
-                    div.html("<div>"+type+"</div>")
-                        .style("left", (d3.event.pageX) + "px")
-                        .style("top", (d3.event.pageY - 28) + "px");
-                })
-                .on("mouseout", function (d) {
-                    div.transition()
-                        .duration(500)
-                        .style("opacity", 0);
-                })
-            .style("fill", function (d) {
+                .attr("d", eyeSVG)
+                .style("fill", function (d) {
                     return d.color;
                 })
                 .attr("transform", function (d) {
@@ -551,12 +626,14 @@
                 .enter()
                 .append('path')
                 .attr("class", '.fixed')
-                .attr("d", fxdSVG).on("mouseover", function (d) {
+                .attr("d", fxdSVG).style("fill", "#0000FF")
+                .on("mouseover", function (d) {
                     div.transition()
                         .duration(200)
                         .style("opacity", .9);
-                    var type2 = d.color==="#0000FF";
-                    div.html("<div>"+type2+"</div>")
+                    div.html("<div>Fixation</div>" +
+                            "<div> X: " + d.x + "</div>" +
+                            "<div> Y: " + d.y + "</div>")
                         .style("left", (d3.event.pageX) + "px")
                         .style("top", (d3.event.pageY - 28) + "px");
                 })
@@ -565,15 +642,22 @@
                         .duration(500)
                         .style("opacity", 0);
                 })
-            .style("fill", function (d) {
-                    return d.color;
-                })
                 .attr("transform", function (d) {
-                    return 'translate(' + (x(d.x)) + ',' + (y(d.y)) + ')';
+                    return 'translate(' + (x(d.x - 25)) + ',' + (y(d.y + 30)) + ')';
                 })
-                .style("fill-rule", function(d){
-                  return 'evenodd';
-                })
+
+                d3.selectAll("text").attr("fill", "#FFFFFF")
+                    .attr("font-weight", "bold")
+                    .attr("opacity", "1.0");
+
+                svg.selectAll("polygon")
+                    .data([fxd])
+                    .enter().append("polygon")
+                    .attr("points", function (d) {
+                        return d.map(function (d) {
+                            return [x(d.x), y(d.y)].join(",");
+                        }).join(" ");
+                    });
         }
 
         function getGZDYMax2() {
@@ -612,58 +696,325 @@
             });
         }
     </script>
-    <!-- Embedded Javascript for the Summary Screen -->
+
+    <!-- Embedded Javascript for Tree visualization -->
     <script>
-    // Defining Functions
-    function createBaselineSummary() {
-        // set the dimensions and margins of the graph
+        var treeslider = document.getElementById("tree_timeline");
+        var treemonitor = document.getElementById("tree_monitor");
+        var treecontainer = document.getElementById("tree_container");
+        var treeintervalHandler = undefined;
+        // SVG Eye
         var eyeSVG =
             "M15 12c0 1.654-1.346 3-3 3s-3-1.346-3-3 1.346-3 3-3 3 1.346 3 3zm9-.449s-4.252 8.449-11.985 8.449c-7.18 0-12.015-8.449-12.015-8.449s4.446-7.551 12.015-7.551c7.694 0 11.985 7.551 11.985 7.551zm-7 .449c0-2.757-2.243-5-5-5s-5 2.243-5 5 2.243 5 5 5 5-2.243 5-5z";
-        var margin = {
-                top: 10,
-                right: 0,
-                bottom: 35,
-                left: 62
-            },
-            width = 700,
-            height = 500;
-        // append the svg object to the body of the page
-        var svg = d3.select("#summary_visualization")
-            .append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-            .append("g")
-            .attr("transform",
-                "translate(" + margin.left + "," + margin.top + ")");
+        // Setting slider to show 1 second per frame
+        treeslider.max = treeFXD.length;
+        var maxTreeY = getTreeGZDYMax();
+        var maxTreeX = getTreeGZDXMax();
+        var minTreeX = getTreeGZDXMin();
+        var minTreeY = getTreeGZDYMin();
 
-        // Add X axis
-        var x = d3.scaleLinear()
-            .domain([minX, maxX])
-            .range([0, width]);
-        svg.append("g")
-            .attr("transform", "translate(" + 0 + "," + (height - 15) + ")")
-            .call(d3.axisBottom(x));
+        treeslider.addEventListener('input', () => {
+            d3.select("#tree_visualization").remove();
+            var svgContainer = document.createElement("DIV");
+            svgContainer.id = "tree_visualization"
+            treecontainer.appendChild(svgContainer)
+            const percentage = 100 * (treeslider.value - treeslider.min) / (treeslider.max - treeslider.min);
+            const bg = `linear-gradient(90deg, #50806a ${percentage}%, #d3d3d3 ${percentage+0.1}%)`;
+            treeslider.style.background = bg;
+            createTreeSVG(treeslider.value - 1);
+        }, false);
 
-        // Add Y axis
-        var y = d3.scaleLinear()
-            .domain([minY, maxY + 100])
-            .range([height, 0]);
-        svg.append("g")
-            .call(d3.axisLeft(y));
-        // Formatting data
-        var plots = [];
-        baseline.forEach(element => {
-            plots.push({
-                x: parseInt(element.LeftScreenX, 10),
-                y: parseInt(element.LeftScreenY, 10),
-                color: '#FF0000'
+        createTreeSVG(treeslider.value - 1);
+
+        function createTreeSVG(value) {
+            // set the dimensions and margins of the graph
+            var margin = {
+                    top: 100,
+                    right: 0,
+                    bottom: 35,
+                    left: 62
+                },
+                width = treemonitor.clientWidth,
+                height = treemonitor.clientHeight - margin.top - margin.bottom;
+            // append the svg object to the body of the page
+            var svg = d3.select("#tree_visualization")
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform",
+                    "translate(" + margin.left + "," + margin.top + ")");
+            // read data
+
+            // Add X axis
+            var x = d3.scaleLinear()
+                .domain([minTreeX, maxTreeX])
+                .range([0, width]);
+            svg.append("g")
+                .attr("transform", "translate(" + (-75) + "," + (height - 15) + ")")
+                .call(d3.axisBottom(x));
+
+            // Add Y axis
+            var y = d3.scaleLinear()
+                .domain([minTreeY, maxTreeY + 100])
+                .range([height, 0]);
+            svg.append("g")
+                .call(d3.axisLeft(y));
+            // Formatting data
+            var currentFixation = treeFXD[value];
+            var fixationPlots = [];
+            var gazePlots = [];
+            var lastGazePlot = {}
+            if (value === 0) {
+                fixationPlots.push({
+                    x: parseInt(currentFixation.ScreenX, 10),
+                    y: parseInt(currentFixation.ScreenY, 10)
+                })
+                treeGZD.forEach(element => {
+                    if ((currentFixation.Time - 0) < (element.Time - 0)) {
+                        return;
+                    } else {
+                        gazePlots.push({
+                            x: parseInt(element.LeftScreenX, 10),
+                            y: parseInt(element.LeftScreenY, 10),
+                            color: '#FF0000'
+                        });
+                        gazePlots.push({
+                            x: parseInt(element.RightScreenX, 10),
+                            y: parseInt(element.RightScreenY, 10),
+                            color: '#00FF00'
+                        });
+                        lastGazePlot =element;
+                    }
+                })
+            } else {
+                var startpoint = (value - 4) < 0 ? 0 : value - 4;
+                for (startpoint; startpoint < value + 1; startpoint++) {
+                    fixationPlots.push({
+                        x: parseInt(treeFXD[startpoint].ScreenX, 10),
+                        y: parseInt(treeFXD[startpoint].ScreenY, 10)
+                    });
+                }
+                startpoint = (value - 4) < 0 ? 0 : value - 4;
+                treeGZD.forEach(element => {
+                    if ((currentFixation.Time - 0) < (element.Time - 0)) {
+                        return;
+                    }
+                    if ((treeFXD[startpoint].Time - 0) < (element.Time - 0)) {
+                        gazePlots.push({
+                            x: parseInt(element.LeftScreenX, 10),
+                            y: parseInt(element.LeftScreenY, 10),
+                            color: '#FF0000'
+                        });
+                        gazePlots.push({
+                            x: parseInt(element.RightScreenX, 10),
+                            y: parseInt(element.RightScreenY, 10),
+                            color: '#00FF00'
+                        });
+                        lastGazePlot = element
+                    }
+                })
+            }
+            changePupil(right, lastGazePlot.RightPupil);
+            changePupil(left, lastGazePlot.LeftPupil);
+            // Sorting Fixation Points
+            fixationPlots.sort((a, b) => {
+                return (a.x - b.x) + (a.y - b.y)
             })
-            plots.push({
-                x: parseInt(element.RightScreenX, 10),
-                y: parseInt(element.RightScreenY, 10),
-                color: '#00FF00'
+            // Define the div for the tooltip
+            var div = d3.select("body").append("div")
+                .attr("class", "tooltiptree")
+                .style("opacity", 0);
+
+            svg.selectAll(".treeeyes")
+                .data(gazePlots)
+                .enter()
+                .append('path')
+                .attr("class", '.treeeyes')
+                .attr("d", eyeSVG)
+                .style("fill", function (d) {
+                    return d.color;
+                })
+                .attr("transform", function (d) {
+                    return 'translate(' + (x(d.x)) + ',' + (y(d.y)) + ')';
+                })
+
+            svg.selectAll(".fixedeyes")
+                .data(fixationPlots)
+                .enter()
+                .append('path')
+                .attr("class", '.fixedeyes')
+                .attr("d", eyeSVG)
+                .style("fill", "#F66A9")
+                .on("mouseover", function (d) {
+                    div.transition()
+                        .duration(200)
+                        .style("opacity", .9);
+                    div.html("<div>Fixation</div>" +
+                            "<div> X: " + d.x + "</div>" +
+                            "<div> Y: " + d.y + "</div>")
+                        .style("left", (d3.event.pageX) + "px")
+                        .style("top", (d3.event.pageY - 28) + "px");
+                })
+                .on("mouseout", function (d) {
+                    div.transition()
+                        .duration(500)
+                        .style("opacity", 0);
+                })
+                .attr("transform", function (d) {
+                    return 'translate(' + (x(d.x - 25)) + ',' + (y(d.y + 30)) + ')';
+                })
+
+            d3.selectAll("text").attr("fill", "#FFFFFF")
+                .attr("font-weight", "bold")
+                .attr("opacity", "1.0");
+
+            svg.selectAll("polygon")
+                .data([fixationPlots])
+                .enter().append("polygon")
+                .attr("points", function (d) {
+                    return d.map(function (d) {
+                        return [x(d.x), y(d.y)].join(",");
+                    }).join(" ");
+                });
+        }
+
+        function moveFrameTree(value) {
+            if (treeintervalHandler !== undefined) {
+                document.getElementById("playericon_tree").innerHTML =
+                    "<i id='playericon_tree' class='fas fa-play'></i>";
+                clearInterval(treeintervalHandler);
+                treeintervalHandler = undefined;
+            }
+            treeslider.value = parseInt(treeslider.value) + value;
+            const percentage = 100 * (treeslider.value - treeslider.min) / (treeslider.max - treeslider.min);
+            const bg = `linear-gradient(90deg, #3C97BF ${percentage}%, #d3d3d3 ${percentage+0.1}%)`;
+            treeslider.style.background = bg;
+            d3.select("#tree_visualization").remove();
+            var svgContainer = document.createElement("DIV");
+            svgContainer.id = "tree_visualization"
+            treecontainer.appendChild(svgContainer)
+            createTreeSVG(treeslider.value - 1);
+        }
+
+        function playTree() {
+            if (treeintervalHandler === undefined) {
+                document.getElementById("playericon_tree").innerHTML =
+                    "<i id='playericon_tree' class='fas fa-pause'></i>";
+                treeintervalHandler = window.setInterval(() => {
+                    treeslider.value = parseInt(treeslider.value) + 1;
+                    const percentage = 100 * (treeslider.value - treeslider.min) / (treeslider.max - treeslider
+                        .min);
+                    const bg = `linear-gradient(90deg, #3C97BF ${percentage}%, #d3d3d3 ${percentage+0.1}%)`;
+                    treeslider.style.background = bg;
+                    d3.select("#tree_visualization").remove();
+                    var svgContainer = document.createElement("DIV");
+                    svgContainer.id = "tree_visualization"
+                    treecontainer.appendChild(svgContainer)
+                    createTreeSVG(treeslider.value - 1);
+                }, 500);
+            } else {
+                document.getElementById("playericon_tree").innerHTML =
+                    "<i id='playericon_tree' class='fas fa-play'></i>";
+                clearInterval(treeintervalHandler);
+                treeintervalHandler = undefined;
+            }
+        }
+
+        function getTreeGZDYMax() {
+            return treeGZD.reduce((max, p) => {
+                if (max.constructor === ({}).constructor) {
+                    max = max.LeftScreenY
+                }
+                return Math.max(p.LeftScreenY, p.RightScreenY, max);
             });
-        });
+        }
+
+        function getTreeGZDXMax() {
+            return treeGZD.reduce((max, p) => {
+                if (max.constructor === ({}).constructor) {
+                    max = max.LeftScreenX
+                }
+                return Math.max(p.LeftScreenX, p.RightScreenX, max);
+            });
+        }
+
+        function getTreeGZDXMin() {
+            return treeGZD.reduce((min, p) => {
+                if (min.constructor === ({}).constructor) {
+                    min = min.LeftScreenX
+                }
+                return Math.min(p.LeftScreenX, p.RightScreenX, min);
+            });
+        }
+
+        function getTreeGZDYMin() {
+            return treeGZD.reduce((min, p) => {
+                if (min.constructor === ({}).constructor) {
+                    min = min.LeftScreenY
+                }
+                return Math.min(p.LeftScreenY, p.RightScreenY, min);
+            });
+        }
+    </script>
+
+
+
+    <!-- Embedded Javascript for the Summary Screen -->
+    <script>
+        // Defining Functions
+        function createBaselineSummary() {
+            // set the dimensions and margins of the graph
+            var margin = {
+                    top: 10,
+                    right: 0,
+                    bottom: 35,
+                    left: 62
+                },
+                width = 700,
+                height = 500;
+            // append the svg object to the body of the page
+            var svg = d3.select("#summary_visualization")
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform",
+                    "translate(" + margin.left + "," + margin.top + ")");
+
+            var maxBaseY = getBaseGZDYMax();
+            var maxBaseX = getBaseGZDXMax();
+            var minBaseX = getBaseGZDXMin();
+            var minBaseY = getBaseGZDYMin();
+            // Add X axis
+            var x = d3.scaleLinear()
+                .domain([minBaseX, maxBaseX])
+                .range([0, width]);
+            svg.append("g")
+                .attr("transform", "translate(" + 0 + "," + (height - 15) + ")")
+                .call(d3.axisBottom(x));
+
+            // Add Y axis
+            var y = d3.scaleLinear()
+                .domain([minBaseY, maxBaseY + 100])
+                .range([height, 0]);
+            svg.append("g")
+                .call(d3.axisLeft(y));
+            // Formatting data
+            var plots = [];
+            baseline.forEach(element => {
+                plots.push({
+                    x: parseInt(element.LeftScreenX, 10),
+                    y: parseInt(element.LeftScreenY, 10),
+                    color: '#FF0000'
+                })
+                plots.push({
+                    x: parseInt(element.RightScreenX, 10),
+                    y: parseInt(element.RightScreenY, 10),
+                    color: '#00FF00'
+                });
+            });
+
 
         var lineFunction = d3.svg.line()
             .x((d) => {
@@ -842,6 +1193,15 @@
 
 
 <style>
+    html {
+        background-image: linear-gradient(#78bf9f, #d6deaf);
+    }
+
+    .columns {
+        margin-bottom: 0 !important;
+        padding-bottom: 0 !important;
+    }
+
     /* Context Menu CSS */
     .context-menu {
         background-color: #2d2d2d;
@@ -896,20 +1256,33 @@
         cursor: pointer;
     }
 
+    .fa-play,
+    .fa-angle-double-right,
+    .fa-angle-double-left {
+        color: #FFFFFF;
+    }
+
+    .button {
+        background-color: #50806a;
+        color: white;
+    }
+
     .large-media_button {
         border-radius: 100%;
         font-size: 40px;
         margin-left: 10px;
         margin-right: 10px;
+
     }
 
     .media_button {
         border-radius: 100%;
         font-size: 25px;
         top: 20px;
+
     }
 
-    /* D3 Example Visualization */
+    /* D3 Visualization */
     .container-spacing {
         margin-top: 10px;
     }
@@ -919,7 +1292,9 @@
         margin: 10px 30px 30px 40px;
     }
 
-    #baseline_visualization {
+    #baseline_visualization,
+    #graph_visualization,
+    #tree_visualization {
         position: absolute;
         top: 0;
     }
@@ -928,7 +1303,11 @@
         position: absolute;
         top: 0;
     }
-    /* Pupil Styling */
+    polygon {
+        fill: CadetBlue;
+        opacity: .5;
+    }
+
     .title {
         margin: 0;
     }
@@ -936,20 +1315,27 @@
     .eye {
         margin: 10% 2% 0% 2%;
         position: relative;
-        border-style: solid;
-        border-width: 20px;
+        border: 20px solid rgba(0, 0, 0, .75);
+        background-color: rgba(0, 0, 0, 0)
     }
 
-    div.tooltip {
+    div.tooltipbaseline,
+    div.tooltiptree,
+    div.tooltipgraph {
         position: absolute;
         text-align: center;
-        width: 60px;
-        height: 28px;
+        width: 75px;
+        height: 50px;
         padding: 2px;
         font: 12px sans-serif;
         background: lightsteelblue;
         border: 0px;
         border-radius: 8px;
         pointer-events: none;
+    }
+
+    /* Modal Styling */
+    .modal-card {
+        width: 65% !important;
     }
 </style>
