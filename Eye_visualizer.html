@@ -503,7 +503,6 @@
                     x: parseInt(currentGraphFXD.ScreenX, 10),
                     y: parseInt(currentGraphFXD.ScreenY, 10)
                 })
-                console.log()
                 graphGZD.forEach(element => {
                     if ((currentGraphFXD.Time - 0) < (element.Time - 0)) {
                         return;
@@ -1012,7 +1011,6 @@
                 });
             });
 
-
         var lineFunction = d3.svg.line()
             .x((d) => {
                 return x(d.x);
@@ -1085,7 +1083,7 @@
 
             // Add X axis
             var x = d3.scaleLinear()
-                .domain([minX, maxX])
+                .domain([minX2, maxX2])
                 .range([0, width]);
             svg.append("g")
                 .attr("transform", "translate(" + 0 + "," + (height - 15) + ")")
@@ -1093,7 +1091,7 @@
 
             // Add Y axis
             var y = d3.scaleLinear()
-                .domain([minY, maxY + 100])
+                .domain([minY2, maxY2 + 100])
                 .range([height, 0]);
             svg.append("g")
                 .call(d3.axisLeft(y));
