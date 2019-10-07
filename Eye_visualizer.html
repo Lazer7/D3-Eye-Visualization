@@ -528,7 +528,7 @@
             // Sorting Fixation Points
             fixationPlots.sort((a, b) => {
                 return (a.x - b.x) + (a.y - b.y)
-            })
+            });
             // Define the div for the tooltip
             var div = d3.select("body").append("div")
                 .attr("class", "tooltiptree")
@@ -824,7 +824,7 @@
               .attr("class", "tooltip")
               .style("opacity", 0);
 
-          svg.selectAll(".eyes")
+          var temp = svg.selectAll(".eyes")
               .data(plots)
               .enter()
               .append('path')
@@ -850,16 +850,23 @@
                   return 'translate(' + (x(d.x)) + ',' + (y(d.y)) + ')';
               });
 
-              //make the convex hull
-              svg.selectAll("polygon")
-                  .data([plots])
-                  .enter().append("polygon")
-                  .attr("points", function (d) {
-                      return d.map(function (d) {
-                          return [x(d.x), y(d.y)].join(",");
-                      }).join(" ");
-                  });
-
+              // // Find outlying points
+              //
+              //
+              // // Sort outlying points
+              // fixationPlots.sort((a, b) => {
+              //     return (a.x - b.x) + (a.y - b.y)
+              // });
+              //
+              // // Plot convex hull
+              // svg.selectAll("polygon")
+              //     .data([fixationPlots])
+              //     .enter().append("polygon")
+              //     .attr("points", function (d) {
+              //         return d.map(function (d) {
+              //             return [x(d.x), y(d.y)].join(",");
+              //         }).join(" ");
+              //     });
       }
 
         function toggleSummary(value, option) {
