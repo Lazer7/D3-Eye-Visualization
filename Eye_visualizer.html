@@ -13,12 +13,7 @@
         integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
 
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
-    <!-- D3 Visualization Javascript -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
     <!-- Load d3.js -->
-    <script src="https://d3js.org/d3.v4.js"></script>
-
-    <!-- specific plugin -->
     <script src="https://d3js.org/d3.v4.js"></script>
     <script src="https://d3js.org/d3-hexbin.v0.2.min.js"></script>
 
@@ -79,7 +74,13 @@
                 </div>
 
                 <div class="container-spacing">
-                    <input id="baseline_timeline" type="range" min="1" max="100" value="0" class="slider" width="80%">
+                    <div class="columns">
+                        <div class="column is-10">
+                            <input id="baseline_timeline" type="range" min="1" max="100" value="0" class="slider"
+                                width="80%">
+                        </div>
+                        <div id="baseline_currenttime" class="column">0 seconds</div>
+                    </div>
                 </div>
                 <div class="columns">
                     <div class="column is-2"></div>
@@ -110,7 +111,14 @@
                 </div>
 
                 <div class="container-spacing">
-                    <input id="tree_timeline" type="range" min="1" max="100" value="0" class="slider" width="80%">
+                    <div class="columns">
+                        <div class="column is-10">
+                            <input id="tree_timeline" type="range" min="1" max="100" value="0" class="slider"
+                                width="80%">
+                        </div>
+                        <div id="tree_currenttime" class="column">0 seconds</div>
+                    </div>
+
                 </div>
                 <div class="columns">
                     <div class="column is-2"></div>
@@ -257,7 +265,7 @@
                 .domain([minBaseX, maxBaseX])
                 .range([0, width]);
             svg.append("g")
-                .attr("transform", "translate(" + 0 + "," + (height - 15) + ")")
+                .attr("transform", "translate(" + 0 + "," + (height - 10) + ")")
                 .call(d3.axisBottom(x));
 
             // Add Y axis
@@ -278,6 +286,7 @@
                 y: parseInt(baseline[value].RightScreenY, 10),
                 color: '#00FF00'
             });
+            document.getElementById("baseline_currenttime").innerHTML = (baseline[value].Time / 1000) + " seconds";
             changePupil(right, baseline[value].RightPupil);
             changePupil(left, baseline[value].LeftPupil);
 
@@ -449,7 +458,7 @@
                 .domain([0, maxTreeX])
                 .range([0, width]);
             svg.append("g")
-                .attr("transform", "translate(" + (0) + "," + (height) + ")")
+                .attr("transform", "translate(" + (-45) + "," + (height - 10) + ")")
                 .call(d3.axisBottom(x));
 
             // Add Y axis
@@ -469,7 +478,8 @@
             if (value === 0) {
                 fixationPlots.push({
                     x: parseInt(currentFixation.ScreenX, 10),
-                    y: parseInt(currentFixation.ScreenY, 10)
+                    y: parseInt(currentFixation.ScreenY, 10),
+                    color: "#F66A9"
                 })
                 treeGZD.forEach(element => {
                     //if FXD time is less than GZD time exit
@@ -487,7 +497,7 @@
                             y: parseInt(element.RightScreenY, 10),
                             color: '#00FF00'
                         });
-                        lastGazePlot =element;
+                        lastGazePlot = element;
                     }
                 })
             } else {
@@ -497,10 +507,12 @@
                 for (startpoint; startpoint < value + 1; startpoint++) {
                     fixationPlots.push({
                         x: parseInt(treeFXD[startpoint].ScreenX, 10),
-                        y: parseInt(treeFXD[startpoint].ScreenY, 10)
+                        y: parseInt(treeFXD[startpoint].ScreenY, 10),
+                        color: "#0000FF"
                     });
                 }
-                startpoint = (value - fixationsPlotted) < 0 ? 0 : value - fixationsPlotted;
+                fixationPlots[fixationPlots.length - 1].color = "#F66A9";
+                startpoint = (value - 4) < 0 ? 0 : value - 4;
                 treeGZD.forEach(element => {
                     //ends when gaze time is greater than current fixation
                     if ((currentFixation.Time - 0) < (element.Time - 0)) {
@@ -523,6 +535,7 @@
                     }
                 })
             }
+            document.getElementById("tree_currenttime").innerHTML = (currentFixation.Time / 1000) + " seconds";
             changePupil(right, lastGazePlot.RightPupil);
             changePupil(left, lastGazePlot.LeftPupil);
             // Sorting Fixation Points
@@ -553,7 +566,9 @@
                 .append('path')
                 .attr("class", '.fixedeyes')
                 .attr("d", eyeSVG)
-                .style("fill", "#F66A9")
+                .style("fill", function (d) {
+                    return d.color;
+                })
                 .on("mouseover", function (d) {
                     div.transition()
                         .duration(200)
