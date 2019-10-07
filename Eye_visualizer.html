@@ -583,7 +583,7 @@
                 .attr("class", '.fixed')
                 .attr("d", fxdSVG)
                 .style("fill", "#0000FF")
-                .style("fill-rule","evenodd")
+
                 .on("mouseover", function (d) {
                     div.transition()
                         .duration(200)
@@ -1141,6 +1141,9 @@
                 .style("fill", function (d) {
                     return d.color;
                 })
+                .style("opacity", function(d){
+                  return 0.25;
+                })
                 .attr("transform", function (d) {
                     return 'translate(' + (x(d.x)) + ',' + (y(d.y)) + ')';
                 })
@@ -1148,11 +1151,23 @@
                   return 'evenodd';
                 });
 
-            svg.append("path")
-                .attr("d", lineFunction(plots))
-                .attr("stroke", "blue")
-                .attr("stroke-width", 1)
-                .attr("fill", "none")
+                d3.selectAll("text").attr("fill", "#FFFFFF")
+                    .attr("font-weight", "bold")
+                    .attr("opacity", "1.0");
+
+                svg.selectAll("polygon")
+                    .data([plots])
+                    .enter().append("polygon")
+                    .attr("points", function (d) {
+                        return d.map(function (d) {
+                            return [x(d.x), y(d.y)].join(",");
+                        }).join(" ");
+                    });
+            // svg.append("path")
+            //     .attr("d", lineFunction(plots))
+            //     .attr("stroke", "blue")
+            //     .attr("stroke-width", 1)
+            //     .attr("fill", "none")
 
         }
 
