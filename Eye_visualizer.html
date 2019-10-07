@@ -257,7 +257,7 @@
                 .domain([minBaseX, maxBaseX])
                 .range([0, width]);
             svg.append("g")
-                .attr("transform", "translate(" + 0 + "," + (height - 15) + ")")
+                .attr("transform", "translate(" + 0 + "," + (height - 10) + ")")
                 .call(d3.axisBottom(x));
 
             // Add Y axis
@@ -449,7 +449,7 @@
                 .domain([minTreeX, maxTreeX])
                 .range([0, width]);
             svg.append("g")
-                .attr("transform", "translate(" + (-75) + "," + (height - 15) + ")")
+                .attr("transform", "translate(" + (-45) + "," + (height-10) + ")")
                 .call(d3.axisBottom(x));
 
             // Add Y axis
@@ -466,7 +466,8 @@
             if (value === 0) {
                 fixationPlots.push({
                     x: parseInt(currentFixation.ScreenX, 10),
-                    y: parseInt(currentFixation.ScreenY, 10)
+                    y: parseInt(currentFixation.ScreenY, 10),
+                    color: "#F66A9"
                 })
                 treeGZD.forEach(element => {
                     if ((currentFixation.Time - 0) < (element.Time - 0)) {
@@ -490,9 +491,12 @@
                 for (startpoint; startpoint < value + 1; startpoint++) {
                     fixationPlots.push({
                         x: parseInt(treeFXD[startpoint].ScreenX, 10),
-                        y: parseInt(treeFXD[startpoint].ScreenY, 10)
+                        y: parseInt(treeFXD[startpoint].ScreenY, 10),
+                        color: "#0000FF"
                     });
                 }
+                fixationPlots[fixationPlots.length-1].color = "#F66A9";
+                console.log(fixationPlots)
                 startpoint = (value - 4) < 0 ? 0 : value - 4;
                 treeGZD.forEach(element => {
                     if ((currentFixation.Time - 0) < (element.Time - 0)) {
@@ -543,7 +547,9 @@
                 .append('path')
                 .attr("class", '.fixedeyes')
                 .attr("d", eyeSVG)
-                .style("fill", "#F66A9")
+                .style("fill", function (d) {
+                    return d.color;
+                })
                 .on("mouseover", function (d) {
                     div.transition()
                         .duration(200)
