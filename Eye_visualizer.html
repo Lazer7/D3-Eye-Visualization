@@ -878,12 +878,12 @@
               .domain([minTreeX, maxTreeX])
               .range([0, width]);
           svg.append("g")
-              .attr("transform", "translate(" + 0 + "," + (height -15) + ")")
+              .attr("transform", "translate(" + 0 + "," + (height ) + ")")
               .call(d3.axisBottom(x));
 
           // Add Y axis
           var y = d3.scaleLinear()
-              .domain([maxTreeY + 100, minTreeY])
+              .domain([maxTreeY + 400, minTreeY])
               .range([height, 0]);
           svg.append("g")
               .call(d3.axisLeft(y));
@@ -911,6 +911,10 @@
               .attr("r", 5)
               .style("opacity", .25)
               .style("fill", function(d) { return d.color; })
+              .attr("transform", function (d) {
+                  return 'translate(' + (x(d.x)) + ',' + (y(d.y)) + ')';
+              });
+
 
 
               // Find outlying points
