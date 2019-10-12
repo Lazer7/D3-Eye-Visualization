@@ -27,6 +27,7 @@
     <script type="text/javascript" src="./Data/p6GZD.js"></script>
     <script type="text/javascript" src="./Data/p6graphGZD.js"></script>
     <script type="text/javascript" src="./Data/p6graphFXD.js"></script>
+    <script type="text/javascript" src="./Data/p6graphEVD.js"></script>
     <script type="text/javascript" src="./Data/p6treeGZD.js"></script>
     <script type="text/javascript" src="./Data/p6treeFXD.js"></script>
 
@@ -79,7 +80,12 @@
                 </div>
 
                 <div class="container-spacing">
-                    <input id="baseline_timeline" type="range" min="1" max="100" value="0" class="slider" width="80%">
+                  <div class="columns">
+                      <div class="column is-10">
+                          <input id="baseline_timeline" type="range" min="1" max="100" value="0" class="slider" width="80%">
+                      </div>
+                      <div id="baseline_currenttime" class="column">0 seconds</div>
+                  </div>
                 </div>
                 <div class="columns">
                     <div class="column is-2"></div>
@@ -107,7 +113,11 @@
                 </div>
 
                 <div class="container-spacing">
-                    <input id="timeline2" type="range" min="1" max="100" value="0" class="slider" width="80%">
+                  <div class="column is-10">
+                      <input id="timeline2" type="range" min="1" max="100" value="0" class="slider" width="80%">
+                  </div>
+                  <div id="graph_currenttime" class="column">0 seconds</div>
+                </div>
                 </div>
                 <div class="columns">
                     <div class="column is-2"></div>
@@ -283,7 +293,7 @@
                 .domain([minBaseX, maxBaseX])
                 .range([0, width]);
             svg.append("g")
-                .attr("transform", "translate(" + 0 + "," + (height - 15) + ")")
+                .attr("transform", "translate(" + 0 + "," + (height - 10) + ")")
                 .call(d3.axisBottom(x));
 
             // Add Y axis
@@ -304,6 +314,7 @@
                 y: parseInt(baseline[value].RightScreenY, 10),
                 color: '#00FF00'
             });
+            document.getElementById("baseline_currenttime").innerHTML = (baseline[value].Time / 1000)+ " seconds";
             changePupil(right, baseline[value].RightPupil);
             changePupil(left, baseline[value].LeftPupil);
 
@@ -435,6 +446,10 @@
             "M15 12c0 1.654-1.346 3-3 3s-3-1.346-3-3 1.346-3 3-3 3 1.346 3 3zm9-.449s-4.252 8.449-11.985 8.449c-7.18 0-12.015-8.449-12.015-8.449s4.446-7.551 12.015-7.551c7.694 0 11.985 7.551 11.985 7.551zm-7 .449c0-2.757-2.243-5-5-5s-5 2.243-5 5 2.243 5 5 5 5-2.243 5-5z";
         var fxdSVG =
             "M12 0c6.623 0 12 5.377 12 12s-5.377 12-12 12-12-5.377-12-12 5.377-12 12-12zm0 1c6.071 0 11 4.929 11 11s-4.929 11-11 11-11-4.929-11-11 4.929-11 11-11zm.053 17c.466 0 .844-.378.844-.845 0-.466-.378-.844-.844-.844-.466 0-.845.378-.845.844 0 .467.379.845.845.845zm.468-2.822h-.998c-.035-1.162.182-2.054.939-2.943.491-.57 1.607-1.479 1.945-2.058.722-1.229.077-3.177-2.271-3.177-1.439 0-2.615.877-2.928 2.507l-1.018-.102c.28-2.236 1.958-3.405 3.922-3.405 1.964 0 3.615 1.25 3.615 3.22 0 1.806-1.826 2.782-2.638 3.868-.422.563-.555 1.377-.568 2.09z";
+        var mouseSVG =
+            "M4 0l16 12.279-6.951 1.17 4.325 8.817-3.596 1.734-4.35-8.879-5.428 4.702z";
+        var keySVG =
+            "M22 7v10h-20v-10h20zm2-2h-24v14h24v-14zm-18 3h-3v2h3v-2zm3 0h-2v2h2v-2zm3 0h-2v2h2v-2zm3 0h-2v2h2v-2zm3 0h-2v2h2v-2zm3 0h-2v2h2v-2zm-4 6h-10v2h10v-2zm4-3h-4v2h4v-2zm-14 0h-4v2h4v-2zm3 0h-2v2h2v-2zm3 0h-2v2h2v-2zm3 0h-2v2h2v-2z";
         // Setting slider to show 1 second per frame
         slider2.max = graphGZD.length;
 
@@ -483,7 +498,7 @@
                 .domain([minX2, maxX2])
                 .range([0, width]);
             svg.append("g")
-                .attr("transform", "translate(" + (-75) + "," + (height - 15) + ")")
+                .attr("transform", "translate(" + (-45) + "," + (height - 10) + ")")
                 .call(d3.axisBottom(x));
 
             // Add Y axis
@@ -498,10 +513,13 @@
             var fxd = [];
             var graphPlots = [];
             var lastGZD = {};
+            var eventMouse = [];
+            var eventKey = [];
             if (value === 0) {
                 fxd.push({
                     x: parseInt(currentGraphFXD.ScreenX, 10),
-                    y: parseInt(currentGraphFXD.ScreenY, 10)
+                    y: parseInt(currentGraphFXD.ScreenY, 10),
+                    color: "#F66A9"
                 })
                 graphGZD.forEach(element => {
                     if ((currentGraphFXD.Time - 0) < (element.Time - 0)) {
@@ -525,10 +543,42 @@
                 for (startpointGraph; startpointGraph < value + 1; startpointGraph++) {
                     fxd.push({
                         x: parseInt(graphFXD[startpointGraph].ScreenX, 10),
-                        y: parseInt(graphFXD[startpointGraph].ScreenY, 10)
+                        y: parseInt(graphFXD[startpointGraph].ScreenY, 10),
+                        color: "#0000FF"
                     });
                 }
+                fxd[fxd.length-1].color = "#F66A9";
                 startpointGraph = (value - 4) < 0 ? 0 : value - 4;
+
+                graphEVD.forEach(element => {
+                  if ((currentGraphFXD.Time - 0) < (element.Time - 0)) {
+                      return;
+                  }
+                  if ((graphFXD[startpointGraph].Time-0)<element.Time - 0 ){
+                    console.log(element.Event);
+                    if(element.Event==="Keyboard")
+                    {
+                      console.log("KEY");
+                      eventKey.push({
+                        x: parseInt(graphFXD[startpointGraph].ScreenX, 10),
+                        y: parseInt(graphFXD[startpointGraph].ScreenY, 10),
+                        color: '#FFFFFF'
+                      });
+                    }
+                    else
+                    {
+                      eventMouse.push({
+                        x: parseInt(graphFXD[startpointGraph].ScreenX, 10),
+                        y: parseInt(graphFXD[startpointGraph].ScreenY, 10),
+                        color: '#FFFFFF'
+                      });
+                    }
+                    lastGZD = element
+                  }
+                })
+
+                startpointGraph = (value - 4) < 0 ? 0 : value - 4;
+
                 graphGZD.forEach(element => {
                     if ((currentGraphFXD.Time - 0) < (element.Time - 0)) {
                         return;
@@ -548,7 +598,7 @@
                     }
                 })
             }
-
+            document.getElementById("graph_currenttime").innerHTML = (currentGraphFXD.Time / 1000)+ " seconds";
             changePupil(right, graphGZD[value].RightPupil);
             changePupil(left, graphGZD[value].LeftPupil);
 
@@ -575,14 +625,42 @@
                     return 'translate(' + (x(d.x)) + ',' + (y(d.y)) + ')';
                 })
 
+            svg.selectAll(".key")
+                .data(eventKey)
+                .enter()
+                .append('path')
+                .attr("class", '.key')
+                .attr("d", keySVG)
+                .style("fill", function (d) {
+                    return d.color;
+                })
+                .attr("transform", function (d) {
+                    return 'translate(' + (x(d.x)) + ',' + (y(d.y)) + ')';
+                })
+
+            svg.selectAll(".mouse")
+                .data(eventMouse)
+                .enter()
+                .append('path')
+                .attr("class", '.mouse')
+                .attr("d", mouseSVG)
+                .style("fill", function (d) {
+                    return d.color;
+                })
+                .attr("transform", function (d) {
+                    return 'translate(' + (x(d.x)) + ',' + (y(d.y)) + ')';
+                })
+
             //plot fixation data
             svg.selectAll(".fixed")
                 .data(fxd)
                 .enter()
                 .append('path')
                 .attr("class", '.fixed')
-                .attr("d", fxdSVG)
-                .style("fill", "#0000FF")
+                .attr("d", eyeSVG)
+                .style("fill", function(d){
+                  return d.color;
+                })
 
                 .on("mouseover", function (d) {
                     div.transition()
@@ -1151,6 +1229,7 @@
                   return 'evenodd';
                 });
 
+                var border = [];
                 d3.selectAll("text").attr("fill", "#FFFFFF")
                     .attr("font-weight", "bold")
                     .attr("opacity", "1.0");
