@@ -21,6 +21,7 @@
     <script type="text/javascript" src="./Data/p6GZD.js"></script>
     <script type="text/javascript" src="./Data/p6treeFXD.js"></script>
     <script type="text/javascript" src="./Data/p6treeGZD.js"></script>
+    <script type="text/javascript" src="./Data/p6treeEVD.js"></script>
     <!-- <script type="text/javascript" src="./Data/p6graphGZD.js"></script>
 
 <script type="text/javascript" src="./Data/p6graphFXD.js"></script>
@@ -218,6 +219,11 @@
         // SVG Eye
         var eyeSVG =
             "M15 12c0 1.654-1.346 3-3 3s-3-1.346-3-3 1.346-3 3-3 3 1.346 3 3zm9-.449s-4.252 8.449-11.985 8.449c-7.18 0-12.015-8.449-12.015-8.449s4.446-7.551 12.015-7.551c7.694 0 11.985 7.551 11.985 7.551zm-7 .449c0-2.757-2.243-5-5-5s-5 2.243-5 5 2.243 5 5 5 5-2.243 5-5z";
+        var mouseSVG =
+            "M4 0l16 12.279-6.951 1.17 4.325 8.817-3.596 1.734-4.35-8.879-5.428 4.702z";
+        var keySVG =
+            "M22 7v10h-20v-10h20zm2-2h-24v14h24v-14zm-18 3h-3v2h3v-2zm3 0h-2v2h2v-2zm3 0h-2v2h2v-2zm3 0h-2v2h2v-2zm3 0h-2v2h2v-2zm3 0h-2v2h2v-2zm-4 6h-10v2h10v-2zm4-3h-4v2h4v-2zm-14 0h-4v2h4v-2zm3 0h-2v2h2v-2zm3 0h-2v2h2v-2zm3 0h-2v2h2v-2z";
+
         // Setting slider to show 1 second per frame
         baselineslider.max = baseline.length;
 
@@ -474,6 +480,8 @@
             // makes object key:value pairs
             var lastGazePlot = {}
             var fixationsPlotted = 5
+            var eventMouse = [];
+            var eventKey = [];
             // plot first fixation point
             if (value === 0) {
                 fixationPlots.push({
@@ -513,6 +521,35 @@
                 }
                 fixationPlots[fixationPlots.length - 1].color = "#F66A9";
                 startpoint = (value - 4) < 0 ? 0 : value - 4;
+
+                treeEVD.forEach(element => {
+                  if ((currentFixation.Time - 0) < (element.Time - 0)) {
+                      return;
+                  }
+                  if ((treeFXD[startpoint].Time-0)<element.Time - 0 ){
+                    console.log(element.Event);
+                    if(element.Event==="Keyboard")
+                    {
+                      console.log("KEY");
+                      eventKey.push({
+                        x: parseInt(treeFXD[startpoint].ScreenX, 10),
+                        y: parseInt(treeFXD[startpoint].ScreenY, 10),
+                        color: '#FFFFFF'
+                      });
+                    }
+                    else
+                    {
+                      eventMouse.push({
+                        x: parseInt(treeFXD[startpoint].ScreenX, 10),
+                        y: parseInt(treeFXD[startpoint].ScreenY, 10),
+                        color: '#FFFFFF'
+                      });
+                    }
+                  }
+                })
+
+                startpoint = (value - 4) < 0 ? 0 : value - 4;
+
                 treeGZD.forEach(element => {
                     //ends when gaze time is greater than current fixation
                     if ((currentFixation.Time - 0) < (element.Time - 0)) {
@@ -553,6 +590,32 @@
                 .append('path')
                 .attr("class", '.treeeyes')
                 .attr("d", eyeSVG)
+                .style("fill", function (d) {
+                    return d.color;
+                })
+                .attr("transform", function (d) {
+                    return 'translate(' + (x(d.x)) + ',' + (y(d.y)) + ')';
+                })
+
+            svg.selectAll(".key")
+                .data(eventKey)
+                .enter()
+                .append('path')
+                .attr("class", '.key')
+                .attr("d", keySVG)
+                .style("fill", function (d) {
+                    return d.color;
+                })
+                .attr("transform", function (d) {
+                    return 'translate(' + (x(d.x)) + ',' + (y(d.y)) + ')';
+                })
+
+            svg.selectAll(".mouse")
+                .data(eventMouse)
+                .enter()
+                .append('path')
+                .attr("class", '.mouse')
+                .attr("d", mouseSVG)
                 .style("fill", function (d) {
                     return d.color;
                 })
