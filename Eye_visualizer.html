@@ -11,23 +11,17 @@
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
         integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
-
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
-    <!-- D3 Visualization Javascript -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
     <!-- Load d3.js -->
     <script src="https://d3js.org/d3.v4.js"></script>
-
-    <!-- specific plugin -->
-    <script src="https://d3js.org/d3.v4.js"></script>
     <script src="https://d3js.org/d3-hexbin.v0.2.min.js"></script>
-
     <!-- data -->
     <script type="text/javascript" src="./Data/p6GZD.js"></script>
-    <!-- <script type="text/javascript" src="./Data/p6graphGZD.js"></script>
-    <script type="text/javascript" src="./Data/p6treeGZD.js"></script>
-    <script type="text/javascript" src="./Data/p6graphFXD.js"></script>
     <script type="text/javascript" src="./Data/p6treeFXD.js"></script>
+    <script type="text/javascript" src="./Data/p6treeGZD.js"></script>
+    <script type="text/javascript" src="./Data/p6treeEVD.js"></script>
+    <!-- <script type="text/javascript" src="./Data/p6graphGZD.js"></script>
+    <script type="text/javascript" src="./Data/p6graphFXD.js"></script>
     <script type="text/javascript" src="./Data/p6graphEVD.js"></script>
     <script type="text/javascript" src="./Data/p6treeEVD.js"></script> -->
 </head>
@@ -42,7 +36,6 @@
                 <button class="delete" aria-label="close" onclick="toggleSummary(false)"></button>
             </header>
             <section id="summary_holder" class="modal-card-body">
-                <!-- Content ... -->
                 <div id="summary_visualization"></div>
             </section>
         </div>
@@ -71,39 +64,74 @@
             <div id="current_visualization" class="title">Baseline Visualization</div>
             <!-- Baseline D3 Visualization -->
             <div id="baseline" class="start top-spacing">
-                <div id="container">
-                    <img src="./Assets/monitor.png" id="monitor" width="80%" />
+                <div id="baseline_container">
+                    <img id="baseline_monitor" src="./Assets/monitor.png" width="80%" />
                     <div id="baseline_visualization"></div>
                 </div>
 
                 <div class="container-spacing">
-                    <input type="range" min="1" max="100" value="0" class="slider" id="timeline" width="80%">
+                    <div class="columns">
+                        <div class="column is-10">
+                            <input id="baseline_timeline" type="range" min="1" max="100" value="0" class="slider"
+                                width="80%">
+                        </div>
+                        <div id="baseline_currenttime" class="column">0 seconds</div>
+                    </div>
                 </div>
                 <div class="columns">
                     <div class="column is-2"></div>
                     <div class="column has-text-centered container-spacing">
-                        <a class="button media_button" onclick="moveFrame(-1)"><i id="previous_icon"
+                        <a class="button media_button" onclick="moveFrameBaseline(-1)"><i id="previous_icon"
                                 class="fa fa-angle-double-left"></i></a>
-                        <a class="button large-media_button" onclick="play()"><i id="playericon"
+                        <a class="button large-media_button" onclick="playBaseline()"><i id="playericon"
                                 class="fas fa-play"></i></a>
-                        <a class="button media_button" onclick="moveFrame(1)"><i id="next_icon"
+                        <a class="button media_button" onclick="moveFrameBaseline(1)"><i id="next_icon"
                                 class="fa fa-angle-double-right"></i></a>
                     </div>
                     <div class="column is-2">
-                        <a class="button has-text-right container-spacing" onclick="toggleSummary(true,'baseline')"> Show Summary
+                        <a class="button has-text-right container-spacing" onclick="toggleSummary(true,'baseline')">
+                            Show Summary
                         </a>
                     </div>
-
                 </div>
 
             </div>
             <!-- Graph D3 Visualization -->
             <div id="graph" class="default">
-                Graph
             </div>
             <!-- Tree D3 Visualization -->
             <div id="tree" class="default">
-                Tree
+                <div id="tree_container">
+                    <img id="tree_monitor" src="./Assets/monitor.png" width="80%" />
+                    <div id="tree_visualization"></div>
+                </div>
+
+                <div class="container-spacing">
+                    <div class="columns">
+                        <div class="column is-10">
+                            <input id="tree_timeline" type="range" min="1" max="100" value="0" class="slider"
+                                width="80%">
+                        </div>
+                        <div id="tree_currenttime" class="column">0 seconds</div>
+                    </div>
+
+                </div>
+                <div class="columns">
+                    <div class="column is-2"></div>
+                    <div class="column has-text-centered container-spacing">
+                        <a class="button media_button" onclick="moveFrameTree(-1)">
+                            <i id="previous_icon_tree" class="fa fa-angle-double-left"></i></a>
+                        <a class="button large-media_button" onclick="playTree()">
+                            <i id="playericon_tree" class="fas fa-play"></i></a>
+                        <a class="button media_button" onclick="moveFrameTree(1)">
+                            <i id="next_icon_tree" class="fa fa-angle-double-right"></i></a>
+                    </div>
+                    <div class="column is-2">
+                        <a class="button has-text-right container-spacing" onclick="toggleSummary(true,'tree')">
+                            Show Summary
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
         <!-- End of Visualization Code -->
@@ -179,35 +207,41 @@
     </script>
     <!-- Embedded Javascript for Baseline visualization-->
     <script>
-        var slider = document.getElementById("timeline");
-        var monitor = document.getElementById("monitor");
-        var container = document.getElementById("container");
-        var intervalHandler = undefined;
+        var baselineslider = document.getElementById("baseline_timeline");
+        var baselinemonitor = document.getElementById("baseline_monitor");
+        var baselinecontainer = document.getElementById("baseline_container");
+        var baselineintervalHandler = undefined;
         // SVG Eye
         var eyeSVG =
             "M15 12c0 1.654-1.346 3-3 3s-3-1.346-3-3 1.346-3 3-3 3 1.346 3 3zm9-.449s-4.252 8.449-11.985 8.449c-7.18 0-12.015-8.449-12.015-8.449s4.446-7.551 12.015-7.551c7.694 0 11.985 7.551 11.985 7.551zm-7 .449c0-2.757-2.243-5-5-5s-5 2.243-5 5 2.243 5 5 5 5-2.243 5-5z";
+        var mouseSVG =
+            "M4 0l16 12.279-6.951 1.17 4.325 8.817-3.596 1.734-4.35-8.879-5.428 4.702z";
+        var keySVG =
+            "M22 7v10h-20v-10h20zm2-2h-24v14h24v-14zm-18 3h-3v2h3v-2zm3 0h-2v2h2v-2zm3 0h-2v2h2v-2zm3 0h-2v2h2v-2zm3 0h-2v2h2v-2zm3 0h-2v2h2v-2zm-4 6h-10v2h10v-2zm4-3h-4v2h4v-2zm-14 0h-4v2h4v-2zm3 0h-2v2h2v-2zm3 0h-2v2h2v-2zm3 0h-2v2h2v-2z";
+
         // Setting slider to show 1 second per frame
-        slider.max = baseline.length;
+        baselineslider.max = baseline.length;
 
-        var maxY = getGZDYMax();
-        var maxX = getGZDXMax();
-        var minX = getGZDXMin();
-        var minY = getGZDYMin();
+        var maxBaseY = getBaseGZDYMax();
+        var maxBaseX = getBaseGZDXMax();
+        var minBaseX = getBaseGZDXMin();
+        var minBaseY = getBaseGZDYMin();
 
 
-        slider.addEventListener('input', () => {
+        baselineslider.addEventListener('input', () => {
             d3.select("#baseline_visualization").remove();
             var svgContainer = document.createElement("DIV");
             svgContainer.id = "baseline_visualization"
-            container.appendChild(svgContainer)
-            const percentage = 100 * (slider.value - slider.min) / (slider.max - slider.min);
+            baselinecontainer.appendChild(svgContainer)
+            const percentage = 100 * (baselineslider.value - baselineslider.min) / (baselineslider.max -
+                baselineslider.min);
             const bg = `linear-gradient(90deg, #50806a ${percentage}%, #d3d3d3 ${percentage+0.1}%)`;
-            slider.style.background = bg;
-            createSVG(slider.value - 1);
+            baselineslider.style.background = bg;
+            createBaselineSVG(baselineslider.value - 1);
         }, false);
-        createSVG(slider.value - 1);
+        createBaselineSVG(baselineslider.value - 1);
 
-        function createSVG(value) {
+        function createBaselineSVG(value) {
             // set the dimensions and margins of the graph
             var margin = {
                     top: 100,
@@ -215,9 +249,9 @@
                     bottom: 35,
                     left: 62
                 },
-                width = monitor.clientWidth,
-                height = monitor.clientHeight - margin.top - margin.bottom;
-            // append the svg object to the body of the page 
+                width = baselinemonitor.clientWidth,
+                height = baselinemonitor.clientHeight - margin.top - margin.bottom;
+            // append the svg object to the body of the page
             var svg = d3.select("#baseline_visualization")
                 .append("svg")
                 .attr("width", width + margin.left + margin.right)
@@ -225,21 +259,19 @@
                 .append("g")
                 .attr("transform",
                     "translate(" + margin.left + "," + margin.top + ")");
-            // read data
-
             // Add X axis
             var x = d3.scaleLinear()
-                .domain([minX, maxX])
+                .domain([minBaseX, maxBaseX])
                 .range([0, width]);
             svg.append("g")
                 .attr("transform", "translate(" + 0 + "," + (height - 15) + ")")
                 .call(d3.axisBottom(x));
-
             // Add Y axis
             var y = d3.scaleLinear()
-                .domain([minY, maxY + 100])
+                .domain([maxBaseY + 100, minBaseY])
                 .range([height, 0]);
             svg.append("g")
+                .attr("transform", "translate(" + 0 + "," + (-20) + ")")
                 .call(d3.axisLeft(y));
             // Formatting data
             var plots = [];
@@ -253,12 +285,13 @@
                 y: parseInt(baseline[value].RightScreenY, 10),
                 color: '#00FF00'
             });
+            document.getElementById("baseline_currenttime").innerHTML = (baseline[value].Time / 1000) + " seconds";
             changePupil(right, baseline[value].RightPupil);
             changePupil(left, baseline[value].LeftPupil);
 
             // Define the div for the tooltip
             var div = d3.select("body").append("div")
-                .attr("class", "tooltip")
+                .attr("class", "tooltipbaseline")
                 .style("opacity", 0);
 
             svg.selectAll(".eyes")
@@ -271,7 +304,9 @@
                         .duration(200)
                         .style("opacity", .9);
                     var type = d.color === "#00FF00" ? "Right Eye" : "Left Eye";
-                    div.html("<div>" + type + "</div>")
+                    div.html("<div>" + type + "</div>" +
+                            "<div>X: " + d.x + "</div>" +
+                            "<div>Y: " + d.y + "</div>")
                         .style("left", (d3.event.pageX) + "px")
                         .style("top", (d3.event.pageY - 28) + "px");
                 })
@@ -292,45 +327,47 @@
                 .attr("opacity", "1.0");
         }
 
-        function moveFrame(value) {
-            if (intervalHandler !== undefined) {
+        function moveFrameBaseline(value) {
+            if (baselineintervalHandler !== undefined) {
                 document.getElementById("playericon").innerHTML = "<i id='playericon' class='fas fa-play'></i>";
-                clearInterval(intervalHandler);
-                intervalHandler = undefined;
+                clearInterval(baselineintervalHandler);
+                baselineintervalHandler = undefined;
             }
-            slider.value = parseInt(slider.value) + value;
-            const percentage = 100 * (slider.value - slider.min) / (slider.max - slider.min);
+            baselineslider.value = parseInt(baselineslider.value) + value;
+            const percentage = 100 * (baselineslider.value - baselineslider.min) / (baselineslider.max - baselineslider
+                .min);
             const bg = `linear-gradient(90deg, #3C97BF ${percentage}%, #d3d3d3 ${percentage+0.1}%)`;
-            slider.style.background = bg;
+            baselineslider.style.background = bg;
             d3.select("#baseline_visualization").remove();
             var svgContainer = document.createElement("DIV");
             svgContainer.id = "baseline_visualization"
-            container.appendChild(svgContainer)
-            createSVG(slider.value - 1);
+            baselinecontainer.appendChild(svgContainer)
+            createBaselineSVG(baselineslider.value - 1);
         }
 
-        function play() {
-            if (intervalHandler === undefined) {
+        function playBaseline() {
+            if (baselineintervalHandler === undefined) {
                 document.getElementById("playericon").innerHTML = "<i id='playericon' class='fas fa-pause'></i>";
-                intervalHandler = window.setInterval(() => {
-                    slider.value = parseInt(slider.value) + 1;
-                    const percentage = 100 * (slider.value - slider.min) / (slider.max - slider.min);
+                baselineintervalHandler = window.setInterval(() => {
+                    baselineslider.value = parseInt(baselineslider.value) + 1;
+                    const percentage = 100 * (baselineslider.value - baselineslider.min) / (baselineslider.max -
+                        baselineslider.min);
                     const bg = `linear-gradient(90deg, #3C97BF ${percentage}%, #d3d3d3 ${percentage+0.1}%)`;
-                    slider.style.background = bg;
+                    baselineslider.style.background = bg;
                     d3.select("#baseline_visualization").remove();
                     var svgContainer = document.createElement("DIV");
                     svgContainer.id = "baseline_visualization"
-                    container.appendChild(svgContainer)
-                    createSVG(slider.value - 1);
+                    baselinecontainer.appendChild(svgContainer)
+                    createBaselineSVG(baselineslider.value - 1);
                 }, 500);
             } else {
                 document.getElementById("playericon").innerHTML = "<i id='playericon' class='fas fa-play'></i>";
-                clearInterval(intervalHandler);
-                intervalHandler = undefined;
+                clearInterval(baselineintervalHandler);
+                baselineintervalHandler = undefined;
             }
         }
 
-        function getGZDYMax() {
+        function getBaseGZDYMax() {
             return baseline.reduce((max, p) => {
                 if (max.constructor === ({}).constructor) {
                     max = max.LeftScreenY
@@ -339,7 +376,7 @@
             });
         }
 
-        function getGZDXMax() {
+        function getBaseGZDXMax() {
             return baseline.reduce((max, p) => {
                 if (max.constructor === ({}).constructor) {
                     max = max.LeftScreenX
@@ -348,7 +385,7 @@
             });
         }
 
-        function getGZDXMin() {
+        function getBaseGZDXMin() {
             return baseline.reduce((min, p) => {
                 if (min.constructor === ({}).constructor) {
                     min = min.LeftScreenX
@@ -357,7 +394,7 @@
             });
         }
 
-        function getGZDYMin() {
+        function getBaseGZDYMin() {
             return baseline.reduce((min, p) => {
                 if (min.constructor === ({}).constructor) {
                     min = min.LeftScreenY
@@ -366,6 +403,366 @@
             });
         }
     </script>
+    <!-- Embedded Javascript for Tree visualization -->
+    <script>
+        var treeslider = document.getElementById("tree_timeline");
+        var treemonitor = document.getElementById("tree_monitor");
+        var treecontainer = document.getElementById("tree_container");
+        var treeintervalHandler = undefined;
+        // SVG Eye
+        var eyeSVG =
+            "M15 12c0 1.654-1.346 3-3 3s-3-1.346-3-3 1.346-3 3-3 3 1.346 3 3zm9-.449s-4.252 8.449-11.985 8.449c-7.18 0-12.015-8.449-12.015-8.449s4.446-7.551 12.015-7.551c7.694 0 11.985 7.551 11.985 7.551zm-7 .449c0-2.757-2.243-5-5-5s-5 2.243-5 5 2.243 5 5 5 5-2.243 5-5z";
+        // Setting slider to show 1 second per frame
+        treeslider.max = treeFXD.length;
+        var maxTreeY = getTreeGZDYMax();
+        var maxTreeX = getTreeGZDXMax();
+        var minTreeX = getTreeGZDXMin();
+        var minTreeY = getTreeGZDYMin();
+
+        treeslider.addEventListener('input', () => {
+            d3.select("#tree_visualization").remove();
+            var svgContainer = document.createElement("DIV");
+            svgContainer.id = "tree_visualization"
+            treecontainer.appendChild(svgContainer)
+            const percentage = 100 * (treeslider.value - treeslider.min) / (treeslider.max - treeslider.min);
+            const bg = `linear-gradient(90deg, #50806a ${percentage}%, #d3d3d3 ${percentage+0.1}%)`;
+            treeslider.style.background = bg;
+            createTreeSVG(treeslider.value - 1);
+        }, false);
+
+        createTreeSVG(treeslider.value - 1);
+
+        function createTreeSVG(value) {
+            // set the dimensions and margins of the graph
+            var margin = {
+                    top: 100,
+                    right: 0,
+                    bottom: 35,
+                    left: 62
+                },
+                width = treemonitor.clientWidth - 40,
+                height = treemonitor.clientHeight - margin.top - margin.bottom;
+            // append the svg object to the body of the page
+            var svg = d3.select("#tree_visualization")
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform",
+                    "translate(" + margin.left + "," + margin.top + ")");
+            // read data
+
+            // Add X axis
+            var x = d3.scaleLinear()
+                .domain([0, maxTreeX])
+                .range([0, width]);
+            svg.append("g")
+                .attr("transform", "translate(" + 0 + "," + (height - 15) + ")")
+                .call(d3.axisBottom(x));
+
+            // Add Y axis
+            var y = d3.scaleLinear()
+                .domain([maxTreeY + 100, 0])
+                .range([height, -10]);
+            svg.append("g")
+                .call(d3.axisLeft(y));
+            // Formatting data
+            var currentFixation = treeFXD[value];
+            var fixationPlots = [];
+            var gazePlots = [];
+            // Makes object key:value pairs
+            var lastGazePlot = {}
+            var fixationsPlotted = 5
+            var eventMouse = [];
+            var eventKey = [];
+            // Plot first fixation point
+            if (value === 0) {
+                fixationPlots.push({
+                    x: parseInt(currentFixation.ScreenX, 10),
+                    y: parseInt(currentFixation.ScreenY, 10),
+                    color: "#F66A9"
+                })
+                treeGZD.forEach(element => {
+                    // If FXD time is less than GZD time exit
+                    if ((currentFixation.Time - 0) < (element.Time - 0)) {
+                        return;
+                    } else {
+                        // Plot GZD points less than FXD time
+                        gazePlots.push({
+                            x: parseInt(element.LeftScreenX, 10),
+                            y: parseInt(element.LeftScreenY, 10),
+                            color: '#FF0000'
+                        });
+                        gazePlots.push({
+                            x: parseInt(element.RightScreenX, 10),
+                            y: parseInt(element.RightScreenY, 10),
+                            color: '#00FF00'
+                        });
+                        lastGazePlot = element;
+                    }
+                })
+            } else {
+                // Plot last 5 fixation points
+                // If value - timeInterval < 0 then 0 otherwise value - timeInterval
+                var startpoint = (value - fixationsPlotted) < 0 ? 0 : value - fixationsPlotted;
+                for (startpoint; startpoint < value + 1; startpoint++) {
+                    fixationPlots.push({
+                        x: parseInt(treeFXD[startpoint].ScreenX, 10),
+                        y: parseInt(treeFXD[startpoint].ScreenY, 10),
+                        color: "#0000FF"
+                    });
+                }
+                fixationPlots[fixationPlots.length - 1].color = "#F66A9";
+                startpoint = (value - 4) < 0 ? 0 : value - 4;
+
+                treeEVD.forEach(element => {
+                    if ((currentFixation.Time - 0) < (element.Time - 0)) {
+                        return;
+                    }
+                    if ((treeFXD[startpoint].Time - 0) < element.Time - 0) {
+                        if (element.Event === "Keyboard") {
+                            eventKey.push({
+                                x: parseInt(treeFXD[startpoint].ScreenX, 10),
+                                y: parseInt(treeFXD[startpoint].ScreenY, 10),
+                                color: '#FFFFFF'
+                            });
+                        } else {
+                            eventMouse.push({
+                                x: parseInt(treeFXD[startpoint].ScreenX, 10),
+                                y: parseInt(treeFXD[startpoint].ScreenY, 10),
+                                color: '#FFFFFF'
+                            });
+                        }
+                    }
+                })
+
+                startpoint = (value - 4) < 0 ? 0 : value - 4;
+
+                treeGZD.forEach(element => {
+                    // Ends when gaze time is greater than current fixation
+                    if ((currentFixation.Time - 0) < (element.Time - 0)) {
+                        return;
+                    }
+                    // Starts from last ith fixation time
+                    // Doesn't start until treeFXD time is less than element
+                    if ((treeFXD[startpoint].Time - 0) < (element.Time - 0)) {
+                        gazePlots.push({
+                            x: parseInt(element.LeftScreenX, 10),
+                            y: parseInt(element.LeftScreenY, 10),
+                            color: '#FF0000'
+                        });
+                        gazePlots.push({
+                            x: parseInt(element.RightScreenX, 10),
+                            y: parseInt(element.RightScreenY, 10),
+                            color: '#00FF00'
+                        });
+                        lastGazePlot = element
+                    }
+                })
+            }
+            document.getElementById("tree_currenttime").innerHTML = (currentFixation.Time / 1000) + " seconds";
+            changePupil(right, lastGazePlot.RightPupil);
+            changePupil(left, lastGazePlot.LeftPupil);
+            // Sorting Fixation Points
+            fixationPlots.sort((a, b) => {
+                return (a.x - b.x) + (a.y - b.y)
+            });
+            // Define the div for the tooltip
+            var div = d3.select("body").append("div")
+                .attr("class", "tooltiptree")
+                .style("opacity", 0);
+
+            svg.selectAll(".treeeyes")
+                .data(gazePlots)
+                .enter()
+                .append('path')
+                .attr("class", '.treeeyes')
+                .attr("d", eyeSVG)
+                .style("fill", function (d) {
+                    return d.color;
+                })
+                .attr("transform", function (d) {
+                    return 'translate(' + (x(d.x)) + ',' + (y(d.y)) + ')';
+                })
+
+            svg.selectAll(".key")
+                .data(eventKey)
+                .enter()
+                .append('path')
+                .attr("class", '.key')
+                .attr("d", keySVG)
+                .style("fill", function (d) {
+                    return d.color;
+                })
+                .attr("transform", function (d) {
+                    return 'translate(' + (x(d.x)) + ',' + (y(d.y)) + ')';
+                }).on("mouseover", function (d) {
+                    div.transition()
+                        .duration(200)
+                        .style("opacity", .9);
+                    div.html("<div>Key Event</div>" +
+                            "<div> X: " + d.x + "</div>" +
+                            "<div> Y: " + d.y + "</div>")
+                        .style("left", (d3.event.pageX) + "px")
+                        .style("top", (d3.event.pageY - 28) + "px");
+                })
+                .on("mouseout", function (d) {
+                    div.transition()
+                        .duration(500)
+                        .style("opacity", 0);
+                })
+
+            svg.selectAll(".mouse")
+                .data(eventMouse)
+                .enter()
+                .append('path')
+                .attr("class", '.mouse')
+                .attr("d", mouseSVG)
+                .style("fill", function (d) {
+                    return d.color;
+                })
+                .attr("transform", function (d) {
+                    return 'translate(' + (x(d.x)) + ',' + (y(d.y)) + ')';
+                }).on("mouseover", function (d) {
+                    div.transition()
+                        .duration(200)
+                        .style("opacity", .9);
+                    div.html("<div>Mouse Event</div>" +
+                            "<div> X: " + d.x + "</div>" +
+                            "<div> Y: " + d.y + "</div>")
+                        .style("left", (d3.event.pageX) + "px")
+                        .style("top", (d3.event.pageY - 28) + "px");
+                })
+                .on("mouseout", function (d) {
+                    div.transition()
+                        .duration(500)
+                        .style("opacity", 0);
+                })
+
+            svg.selectAll(".fixedeyes")
+                .data(fixationPlots)
+                .enter()
+                .append('path')
+                .attr("class", '.fixedeyes')
+                .attr("d", eyeSVG)
+                .style("fill", function (d) {
+                    return d.color;
+                })
+                .on("mouseover", function (d) {
+                    div.transition()
+                        .duration(200)
+                        .style("opacity", .9);
+                    div.html("<div>Fixation</div>" +
+                            "<div> X: " + d.x + "</div>" +
+                            "<div> Y: " + d.y + "</div>")
+                        .style("left", (d3.event.pageX) + "px")
+                        .style("top", (d3.event.pageY - 28) + "px");
+                })
+                .on("mouseout", function (d) {
+                    div.transition()
+                        .duration(500)
+                        .style("opacity", 0);
+                })
+                .attr("transform", function (d) {
+                    return 'translate(' + (x(d.x - 25)) + ',' + (y(d.y + 30)) + ')';
+                })
+
+            d3.selectAll("text").attr("fill", "#FFFFFF")
+                .attr("font-weight", "bold")
+                .attr("opacity", "1.0");
+            //make the convex hull
+            svg.selectAll("polygon")
+                .data([fixationPlots])
+                .enter().append("polygon")
+                .attr("points", function (d) {
+                    return d.map(function (d) {
+                        return [x(d.x), y(d.y)].join(",");
+                    }).join(" ");
+                });
+        }
+
+        function moveFrameTree(value) {
+            if (treeintervalHandler !== undefined) {
+                document.getElementById("playericon_tree").innerHTML =
+                    "<i id='playericon_tree' class='fas fa-play'></i>";
+                clearInterval(treeintervalHandler);
+                treeintervalHandler = undefined;
+            }
+            treeslider.value = parseInt(treeslider.value) + value;
+            const percentage = 100 * (treeslider.value - treeslider.min) / (treeslider.max - treeslider.min);
+            const bg = `linear-gradient(90deg, #3C97BF ${percentage}%, #d3d3d3 ${percentage+0.1}%)`;
+            treeslider.style.background = bg;
+            //deleting old tree plots
+            d3.select("#tree_visualization").remove();
+            var svgContainer = document.createElement("DIV");
+            svgContainer.id = "tree_visualization"
+            treecontainer.appendChild(svgContainer)
+            //creating new tree plots
+            createTreeSVG(treeslider.value - 1);
+        }
+
+        function playTree() {
+            if (treeintervalHandler === undefined) {
+                document.getElementById("playericon_tree").innerHTML =
+                    "<i id='playericon_tree' class='fas fa-pause'></i>";
+                treeintervalHandler = window.setInterval(() => {
+                    treeslider.value = parseInt(treeslider.value) + 1;
+                    const percentage = 100 * (treeslider.value - treeslider.min) / (treeslider.max - treeslider
+                        .min);
+                    const bg = `linear-gradient(90deg, #3C97BF ${percentage}%, #d3d3d3 ${percentage+0.1}%)`;
+                    treeslider.style.background = bg;
+                    d3.select("#tree_visualization").remove();
+                    var svgContainer = document.createElement("DIV");
+                    svgContainer.id = "tree_visualization"
+                    treecontainer.appendChild(svgContainer)
+                    createTreeSVG(treeslider.value - 1);
+                }, 500);
+            } else {
+                document.getElementById("playericon_tree").innerHTML =
+                    "<i id='playericon_tree' class='fas fa-play'></i>";
+                clearInterval(treeintervalHandler);
+                treeintervalHandler = undefined;
+            }
+        }
+
+        function getTreeGZDYMax() {
+            return treeGZD.reduce((max, p) => {
+                if (max.constructor === ({}).constructor) {
+                    max = max.LeftScreenY
+                }
+                return Math.max(p.LeftScreenY, p.RightScreenY, max);
+            });
+        }
+
+        function getTreeGZDXMax() {
+            return treeGZD.reduce((max, p) => {
+                if (max.constructor === ({}).constructor) {
+                    max = max.LeftScreenX
+                }
+                return Math.max(p.LeftScreenX, p.RightScreenX, max);
+            });
+        }
+
+        function getTreeGZDXMin() {
+            return treeGZD.reduce((min, p) => {
+                if (min.constructor === ({}).constructor) {
+                    min = min.LeftScreenX
+                }
+                return Math.min(p.LeftScreenX, p.RightScreenX, min);
+            });
+        }
+
+        function getTreeGZDYMin() {
+            return treeGZD.reduce((min, p) => {
+                if (min.constructor === ({}).constructor) {
+                    min = min.LeftScreenY
+                }
+                return Math.min(p.LeftScreenY, p.RightScreenY, min);
+            });
+        }
+    </script>
+
+
 
     <!-- Embedded Javascript for the Summary Screen -->
     <script>
@@ -380,7 +777,7 @@
                 },
                 width = 700,
                 height = 500;
-            // append the svg object to the body of the page 
+            // append the svg object to the body of the page
             var svg = d3.select("#summary_visualization")
                 .append("svg")
                 .attr("width", width + margin.left + margin.right)
@@ -389,9 +786,13 @@
                 .attr("transform",
                     "translate(" + margin.left + "," + margin.top + ")");
 
+            var maxBaseY = getBaseGZDYMax();
+            var maxBaseX = getBaseGZDXMax();
+            var minBaseX = getBaseGZDXMin();
+            var minBaseY = getBaseGZDYMin();
             // Add X axis
             var x = d3.scaleLinear()
-                .domain([minX, maxX])
+                .domain([minBaseX, maxBaseX])
                 .range([0, width]);
             svg.append("g")
                 .attr("transform", "translate(" + 0 + "," + (height - 15) + ")")
@@ -399,7 +800,7 @@
 
             // Add Y axis
             var y = d3.scaleLinear()
-                .domain([minY, maxY + 100])
+                .domain([minBaseY, maxBaseY + 100])
                 .range([height, 0]);
             svg.append("g")
                 .call(d3.axisLeft(y));
@@ -418,14 +819,13 @@
                 });
             });
 
-            var lineFunction = d3.svg.line()
+            var lineFunction = d3.line()
                 .x((d) => {
                     return x(d.x);
                 })
                 .y((d) => {
                     return y(d.y);
                 })
-                .interpolate("linear");
 
             // Define the div for the tooltip
             var div = d3.select("body").append("div")
@@ -466,6 +866,115 @@
 
         }
 
+        function createTreeSummary() {
+            // set the dimensions and margins of the graph
+            var margin = {
+                    top: 10,
+                    right: 0,
+                    bottom: 35,
+                    left: 62
+                },
+                width = 700,
+                height = 500;
+            // append the svg object to the body of the page
+            var svg = d3.select("#summary_visualization")
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform",
+                    "translate(" + margin.left + "," + margin.top + ")");
+
+            var maxTreeY = getTreeFXDYMax();
+            var maxTreeX = getTreeFXDXMax();
+            var minTreeX = getTreeFXDXMin();
+            var minTreeY = getTreeFXDYMin();
+            // Add X axis
+            var x = d3.scaleLinear()
+                .domain([minTreeX, maxTreeX])
+                .range([0, width]);
+            svg.append("g")
+                .attr("transform", "translate(" + 0 + "," + (height) + ")")
+                .call(d3.axisBottom(x));
+
+            // Add Y axis
+            var y = d3.scaleLinear()
+                .domain([maxTreeY + 400, minTreeY])
+                .range([height, 0]);
+            svg.append("g")
+                .call(d3.axisLeft(y));
+            // Formatting data
+            var plots = [];
+            treeFXD.forEach(element => {
+                plots.push({
+                    x: parseInt(element.ScreenX, 10),
+                    y: parseInt(element.ScreenY, 10),
+                    color: '#FF0000'
+                })
+            });
+
+            // Define the div for the tooltip
+            var div = d3.select("body").append("div")
+                .attr("class", "tooltip")
+                .style("opacity", 0);
+
+            var temp = svg.selectAll("circle")
+                .data(plots)
+                .enter()
+                .append("circle")
+                .attr("cx", function (d) {
+                    return d.x;
+                })
+                .attr("cy", function (d) {
+                    return d.y;
+                })
+                .attr("r", 5)
+                .style("opacity", .25)
+                .style("fill", function (d) {
+                    return d.color;
+                })
+                .attr("transform", function (d) {
+                    return 'translate(' + (x(d.x)) + ',' + (y(d.y)) + ')';
+                });
+        }
+
+        function getTreeFXDYMax() {
+            return treeFXD.reduce((max, p) => {
+                if (max.constructor === ({}).constructor) {
+                    max = max.ScreenY
+                }
+                return Math.max(p.ScreenY, max);
+            });
+        }
+
+        function getTreeFXDXMax() {
+            return treeFXD.reduce((max, p) => {
+                if (max.constructor === ({}).constructor) {
+                    max = max.ScreenX
+                }
+                return Math.max(p.ScreenX, max);
+            });
+        }
+
+        function getTreeFXDXMin() {
+            return treeFXD.reduce((min, p) => {
+                if (min.constructor === ({}).constructor) {
+                    min = min.ScreenX
+                }
+                return Math.min(p.ScreenX, min);
+            });
+        }
+
+        function getTreeFXDYMin() {
+            return treeFXD.reduce((min, p) => {
+                if (min.constructor === ({}).constructor) {
+                    min = min.ScreenY
+                }
+                return Math.min(p.ScreenY, min);
+            });
+        }
+
+
         function toggleSummary(value, option) {
             var modal = document.getElementById("summary_modal");
             if (value) {
@@ -477,6 +986,7 @@
                     case "graph":
                         break;
                     case "tree":
+                        createTreeSummary();
                         break;
                 }
             } else {
@@ -586,7 +1096,7 @@
 
     }
 
-    /* D3 Example Visualization */
+    /* D3 Visualization */
     .container-spacing {
         margin-top: 10px;
     }
@@ -596,9 +1106,16 @@
         margin: 10px 30px 30px 40px;
     }
 
-    #baseline_visualization {
+    #baseline_visualization,
+    #graph_visualization,
+    #tree_visualization {
         position: absolute;
         top: 0;
+    }
+
+    polygon {
+        fill: CadetBlue;
+        opacity: .5;
     }
 
     /* Pupil Styling */
@@ -613,11 +1130,13 @@
         background-color: rgba(0, 0, 0, 0)
     }
 
-    div.tooltip {
+    div.tooltipbaseline,
+    div.tooltiptree,
+    div.tooltipgraph {
         position: absolute;
         text-align: center;
-        width: 60px;
-        height: 28px;
+        width: 75px;
+        height: 50px;
         padding: 2px;
         font: 12px sans-serif;
         background: lightsteelblue;
