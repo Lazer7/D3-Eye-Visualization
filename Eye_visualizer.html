@@ -14,11 +14,17 @@
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
     <!-- Load d3.js -->
     <script src="https://d3js.org/d3.v4.js"></script>
+
+    <!-- specific plugin -->
+    <script src="https://d3js.org/d3.v4.js"></script>
     <script src="https://d3js.org/d3-hexbin.v0.2.min.js"></script>
     <!-- data -->
     <script type="text/javascript" src="./Data/p6GZD.js"></script>
-    <script type="text/javascript" src="./Data/p6treeFXD.js"></script>
+    <script type="text/javascript" src="./Data/p6graphGZD.js"></script>
+    <script type="text/javascript" src="./Data/p6graphFXD.js"></script>
+    <script type="text/javascript" src="./Data/p6graphEVD.js"></script>
     <script type="text/javascript" src="./Data/p6treeGZD.js"></script>
+    <script type="text/javascript" src="./Data/p6treeFXD.js"></script>
     <script type="text/javascript" src="./Data/p6treeEVD.js"></script>
     <!-- <script type="text/javascript" src="./Data/p6graphGZD.js"></script>
     <script type="text/javascript" src="./Data/p6graphFXD.js"></script>
@@ -98,7 +104,37 @@
             </div>
             <!-- Graph D3 Visualization -->
             <div id="graph" class="default">
+                <div id="container2">
+                    <img id="monitor2" src="./Assets/monitor.png" width="80%" />
+                    <div id="graph_visualization"></div>
+                </div>
+
+                <div class="container-spacing">
+                  <div class="column is-10">
+                      <input id="timeline2" type="range" min="1" max="100" value="0" class="slider" width="80%">
+                  </div>
+                  <div id="graph_currenttime" class="column">0 seconds</div>
+                </div>
+                </div>
+                <div class="columns">
+                    <div class="column is-2"></div>
+                    <div class="column has-text-centered container-spacing">
+                        <a class="button media_button" onclick="moveFrame2(-1)">
+                            <i id="previous_icon2" class="fa fa-angle-double-left"></i></a>
+                        <a class="button large-media_button" onclick="play2()">
+                            <i id="playericon2" class="fas fa-play"></i></a>
+                        <a class="button media_button" onclick="moveFrame2(1)">
+                            <i id="next_icon2" class="fa fa-angle-double-right"></i></a>
+                    </div>
+                    <div class="column is-2">
+                        <a class="button has-text-right container-spacing" onclick="toggleSummary(true,'graph')">
+                            Show Summary
+                        </a>
+                    </div>
+
+                  </div>
             </div>
+
             <!-- Tree D3 Visualization -->
             <div id="tree" class="default">
                 <div id="tree_container">
@@ -264,7 +300,7 @@
                 .domain([minBaseX, maxBaseX])
                 .range([0, width]);
             svg.append("g")
-                .attr("transform", "translate(" + 0 + "," + (height - 15) + ")")
+                .attr("transform", "translate(" + 0 + "," + (height - 10) + ")")
                 .call(d3.axisBottom(x));
             // Add Y axis
             var y = d3.scaleLinear()
@@ -403,6 +439,345 @@
             });
         }
     </script>
+
+
+    <!--script for graph visualization-->
+    <script>
+        var slider2 = document.getElementById("timeline2");
+        var monitor2 = document.getElementById("monitor2");
+        var container2 = document.getElementById("container2");
+        var intervalHandler2 = undefined;
+
+        // SVG Eye
+        var eyeSVG =
+            "M15 12c0 1.654-1.346 3-3 3s-3-1.346-3-3 1.346-3 3-3 3 1.346 3 3zm9-.449s-4.252 8.449-11.985 8.449c-7.18 0-12.015-8.449-12.015-8.449s4.446-7.551 12.015-7.551c7.694 0 11.985 7.551 11.985 7.551zm-7 .449c0-2.757-2.243-5-5-5s-5 2.243-5 5 2.243 5 5 5 5-2.243 5-5z";
+        var fxdSVG =
+            "M12 0c6.623 0 12 5.377 12 12s-5.377 12-12 12-12-5.377-12-12 5.377-12 12-12zm0 1c6.071 0 11 4.929 11 11s-4.929 11-11 11-11-4.929-11-11 4.929-11 11-11zm.053 17c.466 0 .844-.378.844-.845 0-.466-.378-.844-.844-.844-.466 0-.845.378-.845.844 0 .467.379.845.845.845zm.468-2.822h-.998c-.035-1.162.182-2.054.939-2.943.491-.57 1.607-1.479 1.945-2.058.722-1.229.077-3.177-2.271-3.177-1.439 0-2.615.877-2.928 2.507l-1.018-.102c.28-2.236 1.958-3.405 3.922-3.405 1.964 0 3.615 1.25 3.615 3.22 0 1.806-1.826 2.782-2.638 3.868-.422.563-.555 1.377-.568 2.09z";
+        var mouseSVG =
+            "M4 0l16 12.279-6.951 1.17 4.325 8.817-3.596 1.734-4.35-8.879-5.428 4.702z";
+        var keySVG =
+            "M22 7v10h-20v-10h20zm2-2h-24v14h24v-14zm-18 3h-3v2h3v-2zm3 0h-2v2h2v-2zm3 0h-2v2h2v-2zm3 0h-2v2h2v-2zm3 0h-2v2h2v-2zm3 0h-2v2h2v-2zm-4 6h-10v2h10v-2zm4-3h-4v2h4v-2zm-14 0h-4v2h4v-2zm3 0h-2v2h2v-2zm3 0h-2v2h2v-2zm3 0h-2v2h2v-2z";
+        // Setting slider to show 1 second per frame
+        slider2.max = graphGZD.length;
+
+        var maxY2 = getGZDYMax2();
+        var maxX2 = getGZDXMax2();
+        var minX2 = getGZDXMin2();
+        var minY2 = getGZDYMin2();
+
+        slider2.addEventListener('input', () => {
+            d3.select("#graph_visualization").remove();
+            var svgContainer2 = document.createElement("DIV");
+            svgContainer2.id = "graph_visualization"
+            container2.appendChild(svgContainer2)
+            const percentage = 100 * (slider2.value - slider2.min) / (slider2.max - slider2.min);
+            const bg = `linear-gradient(90deg, #3C97BF ${percentage}%, #d3d3d3 ${percentage+0.1}%)`;
+            slider2.style.background = bg;
+            createSVG2(slider2.value - 1);
+        }, false);
+        createSVG2(slider2.value - 1);
+
+
+
+        // Defining Functions
+        function createSVG2(value) {
+            // set the dimensions and margins of the graph
+            var margin = {
+                    top: 100,
+                    right: 0,
+                    bottom: 35,
+                    left: 62
+                },
+                width = monitor2.clientWidth,
+                height = monitor2.clientHeight - margin.top - margin.bottom;
+            // append the svg object to the body of the page
+            var svg = d3.select("#graph_visualization")
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform",
+                    "translate(" + margin.left + "," + margin.top + ")");
+            // read data
+
+            // Add X axis
+            var x = d3.scaleLinear()
+                .domain([minX2, maxX2])
+                .range([0, width]);
+            svg.append("g")
+                .attr("transform", "translate(" + (-45) + "," + (height - 10) + ")")
+                .call(d3.axisBottom(x));
+
+            // Add Y axis
+            var y = d3.scaleLinear()
+                .domain([minY2, maxY2 + 100])
+                .range([height, 0]);
+            svg.append("g")
+                .call(d3.axisLeft(y));
+
+            // Formatting data
+            var currentGraphFXD = graphFXD[value];
+            var fxd = [];
+            var graphPlots = [];
+            var lastGZD = {};
+            var eventMouse = [];
+            var eventKey = [];
+            if (value === 0) {
+                fxd.push({
+                    x: parseInt(currentGraphFXD.ScreenX, 10),
+                    y: parseInt(currentGraphFXD.ScreenY, 10),
+                    color: "#F66A9"
+                })
+                graphGZD.forEach(element => {
+                    if ((currentGraphFXD.Time - 0) < (element.Time - 0)) {
+                        return;
+                    } else {
+                        graphPlots.push({
+                            x: parseInt(element.LeftScreenX, 10),
+                            y: parseInt(element.LeftScreenY, 10),
+                            color: '#FF0000'
+                        });
+                        graphPlots.push({
+                            x: parseInt(element.RightScreenX, 10),
+                            y: parseInt(element.RightScreenY, 10),
+                            color: '#00FF00'
+                        });
+                        lastGZD =element;
+                    }
+                })
+            } else {
+                var startpointGraph = (value - 4) < 0 ? 0 : value - 4;
+                for (startpointGraph; startpointGraph < value + 1; startpointGraph++) {
+                    fxd.push({
+                        x: parseInt(graphFXD[startpointGraph].ScreenX, 10),
+                        y: parseInt(graphFXD[startpointGraph].ScreenY, 10),
+                        color: "#0000FF"
+                    });
+                }
+                fxd[fxd.length-1].color = "#F66A9";
+                startpointGraph = (value - 4) < 0 ? 0 : value - 4;
+
+                graphEVD.forEach(element => {
+                  if ((currentGraphFXD.Time - 0) < (element.Time - 0)) {
+                      return;
+                  }
+                  if ((graphFXD[startpointGraph].Time-0)<element.Time - 0 ){
+                    console.log(element.Event);
+                    if(element.Event==="Keyboard")
+                    {
+                      console.log("KEY");
+                      eventKey.push({
+                        x: parseInt(graphFXD[startpointGraph].ScreenX, 10),
+                        y: parseInt(graphFXD[startpointGraph].ScreenY, 10),
+                        color: '#FFFFFF'
+                      });
+                    }
+                    else
+                    {
+                      eventMouse.push({
+                        x: parseInt(graphFXD[startpointGraph].ScreenX, 10),
+                        y: parseInt(graphFXD[startpointGraph].ScreenY, 10),
+                        color: '#FFFFFF'
+                      });
+                    }
+                    lastGZD = element
+                  }
+                })
+
+                startpointGraph = (value - 4) < 0 ? 0 : value - 4;
+
+                graphGZD.forEach(element => {
+                    if ((currentGraphFXD.Time - 0) < (element.Time - 0)) {
+                        return;
+                    }
+                    if ((graphFXD[startpointGraph].Time - 0) < (element.Time - 0)) {
+                        graphPlots.push({
+                            x: parseInt(element.LeftScreenX, 10),
+                            y: parseInt(element.LeftScreenY, 10),
+                            color: '#FF0000'
+                        });
+                        graphPlots.push({
+                            x: parseInt(element.RightScreenX, 10),
+                            y: parseInt(element.RightScreenY, 10),
+                            color: '#00FF00'
+                        });
+                        lastGZD = element
+                    }
+                })
+            }
+            document.getElementById("graph_currenttime").innerHTML = (currentGraphFXD.Time / 1000)+ " seconds";
+            changePupil(right, graphGZD[value].RightPupil);
+            changePupil(left, graphGZD[value].LeftPupil);
+
+            //sorting fixation Points
+            fxd.sort((a,b)=>{
+              return (a.x-b.x)+(a.y-b.y)
+            })
+
+            // Define the div for the tooltip
+            var div = d3.select("body").append("div")
+                .attr("class", "tooltipgraph")
+                .style("opacity", 0);
+
+            svg.selectAll(".grapheyes")
+                .data(graphPlots)
+                .enter()
+                .append('path')
+                .attr("class", '.grapheyes')
+                .attr("d", eyeSVG)
+                .style("fill", function (d) {
+                    return d.color;
+                })
+                .attr("transform", function (d) {
+                    return 'translate(' + (x(d.x)) + ',' + (y(d.y)) + ')';
+                })
+
+            svg.selectAll(".key")
+                .data(eventKey)
+                .enter()
+                .append('path')
+                .attr("class", '.key')
+                .attr("d", keySVG)
+                .style("fill", function (d) {
+                    return d.color;
+                })
+                .attr("transform", function (d) {
+                    return 'translate(' + (x(d.x)) + ',' + (y(d.y)) + ')';
+                })
+
+            svg.selectAll(".mouse")
+                .data(eventMouse)
+                .enter()
+                .append('path')
+                .attr("class", '.mouse')
+                .attr("d", mouseSVG)
+                .style("fill", function (d) {
+                    return d.color;
+                })
+                .attr("transform", function (d) {
+                    return 'translate(' + (x(d.x)) + ',' + (y(d.y)) + ')';
+                })
+
+            //plot fixation data
+            svg.selectAll(".fixed")
+                .data(fxd)
+                .enter()
+                .append('path')
+                .attr("class", '.fixed')
+                .attr("d", eyeSVG)
+                .style("fill", function(d){
+                  return d.color;
+                })
+
+                .on("mouseover", function (d) {
+                    div.transition()
+                        .duration(200)
+                        .style("opacity", .9);
+                    div.html("<div>Fixation</div>" +
+                            "<div> X: " + d.x + "</div>" +
+                            "<div> Y: " + d.y + "</div>")
+                        .style("left", (d3.event.pageX) + "px")
+                        .style("top", (d3.event.pageY - 28) + "px");
+                })
+                .on("mouseout", function (d) {
+                    div.transition()
+                        .duration(500)
+                        .style("opacity", 0);
+                })
+                .attr("transform", function (d) {
+                    return 'translate(' + (x(d.x - 25)) + ',' + (y(d.y + 30)) + ')';
+                })
+
+                d3.selectAll("text").attr("fill", "#FFFFFF")
+                    .attr("font-weight", "bold")
+                    .attr("opacity", "1.0");
+
+                svg.selectAll("polygon")
+                    .data([fxd])
+                    .enter().append("polygon")
+                    .attr("points", function (d) {
+                        return d.map(function (d) {
+                            return [x(d.x), y(d.y)].join(",");
+                        }).join(" ");
+                    });
+        }
+
+        function moveFrame2(value) {
+            if (intervalHandler2 !== undefined) {
+                document.getElementById("playericon2").innerHTML = "<i id='playericon2' class='fas fa-play'></i>";
+                clearInterval(intervalHandler2);
+                intervalHandler2 = undefined;
+            }
+            slider2.value = parseInt(slider2.value) + value;
+            const percentage = 100 * (slider2.value - slider2.min) / (slider2.max - slider2.min);
+            const bg = `linear-gradient(90deg, #3C97BF ${percentage}%, #d3d3d3 ${percentage+0.1}%)`;
+            slider2.style.background = bg;
+            d3.select("#graph_visualization").remove();
+            var svgContainer2 = document.createElement("DIV");
+            svgContainer2.id = "graph_visualization"
+            container2.appendChild(svgContainer2)
+            createSVG2(slider2.value - 1);
+        }
+
+        function play2() {
+            if (intervalHandler2 === undefined) {
+                document.getElementById("playericon2").innerHTML = "<i id='playericon2' class='fas fa-pause'></i>";
+                intervalHandler2 = window.setInterval(() => {
+                    slider2.value = parseInt(slider2.value) + 1;
+                    const percentage = 100 * (slider2.value - slider2.min) / (slider2.max - slider2.min);
+                    const bg = `linear-gradient(90deg, #3C97BF ${percentage}%, #d3d3d3 ${percentage+0.1}%)`;
+                    slider2.style.background = bg;
+                    d3.select("#graph_visualization").remove();
+                    var svgContainer2 = document.createElement("DIV");
+                    svgContainer2.id = "graph_visualization"
+                    container2.appendChild(svgContainer2)
+                    createSVG2(slider2.value - 1);
+                }, 500);
+            } else {
+                document.getElementById("playericon2").innerHTML = "<i id='playericon2' class='fas fa-play'></i>";
+                clearInterval(intervalHandler2);
+                intervalHandler2 = undefined;
+            }
+        }
+
+
+        function getGZDYMax2() {
+            return graphGZD.reduce((max, p) => {
+                if (max.constructor === ({}).constructor) {
+                    max = max.LeftScreenY
+                }
+                return Math.max(p.LeftScreenY, p.RightScreenY, max);
+            });
+        }
+
+        function getGZDXMax2() {
+            return graphGZD.reduce((max, p) => {
+                if (max.constructor === ({}).constructor) {
+                    max = max.LeftScreenX
+                }
+                return Math.max(p.LeftScreenX, p.RightScreenX, max);
+            });
+        }
+
+        function getGZDXMin2() {
+            return graphGZD.reduce((min, p) => {
+                if (min.constructor === ({}).constructor) {
+                    min = min.LeftScreenX
+                }
+                return Math.min(p.LeftScreenX, p.RightScreenX, min);
+            });
+        }
+
+        function getGZDYMin2() {
+            return graphGZD.reduce((min, p) => {
+                if (min.constructor === ({}).constructor) {
+                    min = min.LeftScreenY
+                }
+                return Math.min(p.LeftScreenY, p.RightScreenY, min);
+            });
+        }
+    </script>
+
     <!-- Embedded Javascript for Tree visualization -->
     <script>
         var treeslider = document.getElementById("tree_timeline");
@@ -819,7 +1194,101 @@
                 });
             });
 
-            var lineFunction = d3.line()
+        var lineFunction = d3.svg.line()
+            .x((d) => {
+                return x(d.x);
+            })
+            .y((d) => {
+                return y(d.y);
+            })
+            .interpolate("linear");
+
+        // Define the div for the tooltip
+        var div = d3.select("body").append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0);
+
+        svg.selectAll(".eyes")
+            .data(plots)
+            .enter()
+            .append('path')
+            .attr("class", '.eyes')
+            .attr("d", eyeSVG).on("mouseover", function (d) {
+                div.transition()
+                    .duration(200)
+                    .style("opacity", .9);
+                var type = d.color === "#00FF00" ? "Right Eye" : "Left Eye";
+                div.html("<div>" + type + "</div>")
+                    .style("left", (d3.event.pageX) + "px")
+                    .style("top", (d3.event.pageY - 28) + "px");
+            })
+            .on("mouseout", function (d) {
+                div.transition()
+                    .duration(500)
+                    .style("opacity", 0);
+            })
+            .style("fill", function (d) {
+                return d.color;
+            })
+            .attr("transform", function (d) {
+                return 'translate(' + (x(d.x)) + ',' + (y(d.y)) + ')';
+            });
+
+        svg.append("path")
+            .attr("d", lineFunction(plots))
+            .attr("stroke", "blue")
+            .attr("stroke-width", 1)
+            .attr("fill", "none")
+
+    }
+
+        function createGraphSummary() {
+            // set the dimensions and margins of the graph
+            var margin = {
+                    top: 10,
+                    right: 0,
+                    bottom: 35,
+                    left: 62
+                },
+                width = 700,
+                height = 500;
+
+            var fxdSVG =
+                 "M12 0c6.623 0 12 5.377 12 12s-5.377 12-12 12-12-5.377-12-12 5.377-12 12-12zm0 1c6.071 0 11 4.929 11 11s-4.929 11-11 11-11-4.929-11-11 4.929-11 11-11zm.053 17c.466 0 .844-.378.844-.845 0-.466-.378-.844-.844-.844-.466 0-.845.378-.845.844 0 .467.379.845.845.845zm.468-2.822h-.998c-.035-1.162.182-2.054.939-2.943.491-.57 1.607-1.479 1.945-2.058.722-1.229.077-3.177-2.271-3.177-1.439 0-2.615.877-2.928 2.507l-1.018-.102c.28-2.236 1.958-3.405 3.922-3.405 1.964 0 3.615 1.25 3.615 3.22 0 1.806-1.826 2.782-2.638 3.868-.422.563-.555 1.377-.568 2.09z";
+            // append the svg object to the body of the page
+            var svg = d3.select("#summary_visualization")
+                .append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform",
+                    "translate(" + margin.left + "," + margin.top + ")");
+
+            // Add X axis
+            var x = d3.scaleLinear()
+                .domain([minX2, maxX2])
+                .range([0, width]);
+            svg.append("g")
+                .attr("transform", "translate(" + 0 + "," + (height - 15) + ")")
+                .call(d3.axisBottom(x));
+
+            // Add Y axis
+            var y = d3.scaleLinear()
+                .domain([minY2, maxY2 + 100])
+                .range([height, 0]);
+            svg.append("g")
+                .call(d3.axisLeft(y));
+            // Formatting data
+            var plots = [];
+            graphFXD.forEach(element => {
+                plots.push({
+                    x: parseInt(element.ScreenX, 10),
+                    y: parseInt(element.ScreenY, 10),
+                    color: '#0000FF'
+                })
+            });
+
+            var lineFunction = d3.svg.line()
                 .x((d) => {
                     return x(d.x);
                 })
@@ -832,16 +1301,16 @@
                 .attr("class", "tooltip")
                 .style("opacity", 0);
 
-            svg.selectAll(".eyes")
+            svg.selectAll(".fxd")
                 .data(plots)
                 .enter()
                 .append('path')
-                .attr("class", '.eyes')
-                .attr("d", eyeSVG).on("mouseover", function (d) {
+                .attr("class", '.fxd')
+                .attr("d", fxdSVG).on("mouseover", function (d) {
                     div.transition()
                         .duration(200)
                         .style("opacity", .9);
-                    var type = d.color === "#00FF00" ? "Right Eye" : "Left Eye";
+                    var type = d.color === "0000FF";
                     div.html("<div>" + type + "</div>")
                         .style("left", (d3.event.pageX) + "px")
                         .style("top", (d3.event.pageY - 28) + "px");
@@ -854,15 +1323,34 @@
                 .style("fill", function (d) {
                     return d.color;
                 })
+                .style("opacity", function(d){
+                  return 0.25;
+                })
                 .attr("transform", function (d) {
                     return 'translate(' + (x(d.x)) + ',' + (y(d.y)) + ')';
+                })
+                .style("fill-rule", function(d){
+                  return 'evenodd';
                 });
 
-            svg.append("path")
-                .attr("d", lineFunction(plots))
-                .attr("stroke", "blue")
-                .attr("stroke-width", 1)
-                .attr("fill", "none")
+                var border = [];
+                d3.selectAll("text").attr("fill", "#FFFFFF")
+                    .attr("font-weight", "bold")
+                    .attr("opacity", "1.0");
+
+                svg.selectAll("polygon")
+                    .data([plots])
+                    .enter().append("polygon")
+                    .attr("points", function (d) {
+                        return d.map(function (d) {
+                            return [x(d.x), y(d.y)].join(",");
+                        }).join(" ");
+                    });
+            // svg.append("path")
+            //     .attr("d", lineFunction(plots))
+            //     .attr("stroke", "blue")
+            //     .attr("stroke-width", 1)
+            //     .attr("fill", "none")
 
         }
 
@@ -984,6 +1472,7 @@
                         createBaselineSummary();
                         break;
                     case "graph":
+                        createGraphSummary();
                         break;
                     case "tree":
                         createTreeSummary();
@@ -1113,12 +1602,15 @@
         top: 0;
     }
 
+    #graph_visualization {
+        position: absolute;
+        top: 0;
+    }
     polygon {
         fill: CadetBlue;
         opacity: .5;
     }
 
-    /* Pupil Styling */
     .title {
         margin: 0;
     }
