@@ -15,7 +15,6 @@
     <!-- Load d3.js -->
     <script src="https://d3js.org/d3.v4.js"></script>
     <script src="https://d3js.org/d3-hexbin.v0.2.min.js"></script>
-
     <!-- data -->
     <script type="text/javascript" src="./Data/p6GZD.js"></script>
     <script type="text/javascript" src="./Data/p6treeFXD.js"></script>
@@ -820,14 +819,13 @@
                 });
             });
 
-            var lineFunction = d3.svg.line()
+            var lineFunction = d3.line()
                 .x((d) => {
                     return x(d.x);
                 })
                 .y((d) => {
                     return y(d.y);
                 })
-                .interpolate("linear");
 
             // Define the div for the tooltip
             var div = d3.select("body").append("div")
@@ -938,26 +936,6 @@
                 .attr("transform", function (d) {
                     return 'translate(' + (x(d.x)) + ',' + (y(d.y)) + ')';
                 });
-
-
-
-            // Find outlying points
-
-
-            // // Sort outlying points
-            // fixation_Plots.sort((a, b) => {
-            //     return (a.x - b.x) + (a.y - b.y)
-            // });
-            //
-            // // Plot convex hull
-            // svg.selectAll("polygon")
-            //     .data([fixation_Plots])
-            //     .enter().append("polygon")
-            //     .attr("points", function (d) {
-            //         return d.map(function (d) {
-            //             return [x(d.x), y(d.y)].join(",");
-            //         }).join(" ");
-            //     });
         }
 
         function getTreeFXDYMax() {
