@@ -2,8 +2,7 @@
 
 <img src="https://img.shields.io/badge/Class-CECS%20450-blue"/> <img src="https://img.shields.io/badge/Build-1.0-green"/> 
 <img src="https://img.shields.io/badge/Contributors-5-blue"/> <img src="https://img.shields.io/badge/Weebs-2-red"/>
-<img src="https://img.shields.io/badge/Memes-Too%20Many-green"/> <img src="https://img.shields.io/badge/Memes-Too%20Many-green"/>
-<img src="https://img.shields.io/badge/Bless%20Windows-Yes-red"/>
+<img src="https://img.shields.io/badge/Memes-Too%20Many-green"/> <img src="https://img.shields.io/badge/Bless%20Windows-Yes-red"/>
 
 ## Contributors 
 * Jimmy Chao (Weeb)
