@@ -1181,7 +1181,7 @@
 
             // Add Y axis
             var y = d3.scaleLinear()
-                .domain([minBaseY, maxBaseY + 100])
+                .domain([maxBaseY + 100, minBaseY, ])
                 .range([height, 0]);
             svg.append("g")
                 .call(d3.axisLeft(y));
@@ -1279,7 +1279,7 @@
 
             // Add Y axis
             var y = d3.scaleLinear()
-                .domain([minY2, maxY2 + 100])
+                .domain([maxY2 + 100, minY2])
                 .range([height, 0]);
             svg.append("g")
                 .call(d3.axisLeft(y));
@@ -1379,10 +1379,11 @@
 
             // Add Y axis
             var y = d3.scaleLinear()
-                .domain([maxTreeY + 400, minTreeY])
+                .domain([maxTreeY, minTreeY])
                 .range([height, 0]);
             svg.append("g")
                 .call(d3.axisLeft(y));
+
             // Formatting data
             var plots = [];
             treeFXD.forEach(element => {
@@ -1403,18 +1404,24 @@
                 .enter()
                 .append("circle")
                 .attr("cx", function (d) {
-                    return d.x;
+                    return x(d.x);
                 })
                 .attr("cy", function (d) {
-                    return d.y;
+                    return y(d.y);
                 })
                 .attr("r", 5)
                 .style("opacity", .25)
                 .style("fill", function (d) {
                     return d.color;
-                })
-                .attr("transform", function (d) {
-                    return 'translate(' + (x(d.x)) + ',' + (y(d.y)) + ')';
+                });
+
+            svg.selectAll("polygon")
+                .data([plots])
+                .enter().append("polygon")
+                .attr("points", function (d) {
+                    return d.map(function (d) {
+                        return [x(d.x), y(d.y)].join(",");
+                    }).join(" ");
                 });
         }
 
