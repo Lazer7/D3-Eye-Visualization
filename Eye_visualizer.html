@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 
 <head>
@@ -26,10 +26,6 @@
     <script type="text/javascript" src="./Data/p6treeGZD.js"></script>
     <script type="text/javascript" src="./Data/p6treeFXD.js"></script>
     <script type="text/javascript" src="./Data/p6treeEVD.js"></script>
-    <!-- <script type="text/javascript" src="./Data/p6graphGZD.js"></script>
-    <script type="text/javascript" src="./Data/p6graphFXD.js"></script>
-    <script type="text/javascript" src="./Data/p6graphEVD.js"></script>
-    <script type="text/javascript" src="./Data/p6treeEVD.js"></script> -->
 </head>
 
 <body>
@@ -100,7 +96,6 @@
                         </a>
                     </div>
                 </div>
-
             </div>
             <!-- Graph D3 Visualization -->
             <div id="graph" class="default">
@@ -108,13 +103,13 @@
                     <img id="monitor2" src="./Assets/monitor.png" width="80%" />
                     <div id="graph_visualization"></div>
                 </div>
-
                 <div class="container-spacing">
-                  <div class="column is-10">
-                      <input id="timeline2" type="range" min="1" max="100" value="0" class="slider" width="80%">
-                  </div>
-                  <div id="graph_currenttime" class="column">0 seconds</div>
-                </div>
+                    <div class="columns">
+                        <div class="column is-10">
+                            <input id="timeline2" type="range" min="1" max="100" value="0" class="slider" width="80%" />
+                        </div>
+                        <div id="graph_currenttime" class="column">0 seconds</div>
+                    </div>
                 </div>
                 <div class="columns">
                     <div class="column is-2"></div>
@@ -131,26 +126,22 @@
                             Show Summary
                         </a>
                     </div>
-
-                  </div>
+                </div>
             </div>
-
             <!-- Tree D3 Visualization -->
             <div id="tree" class="default">
                 <div id="tree_container">
                     <img id="tree_monitor" src="./Assets/monitor.png" width="80%" />
                     <div id="tree_visualization"></div>
                 </div>
-
                 <div class="container-spacing">
                     <div class="columns">
                         <div class="column is-10">
                             <input id="tree_timeline" type="range" min="1" max="100" value="0" class="slider"
-                                width="80%">
+                                width="80%" />
                         </div>
                         <div id="tree_currenttime" class="column">0 seconds</div>
                     </div>
-
                 </div>
                 <div class="columns">
                     <div class="column is-2"></div>
@@ -439,9 +430,7 @@
             });
         }
     </script>
-
-
-    <!--script for graph visualization-->
+    <!-- Embedded Javascript for Graph visualization-->
     <script>
         var slider2 = document.getElementById("timeline2");
         var monitor2 = document.getElementById("monitor2");
@@ -457,8 +446,8 @@
             "M4 0l16 12.279-6.951 1.17 4.325 8.817-3.596 1.734-4.35-8.879-5.428 4.702z";
         var keySVG =
             "M22 7v10h-20v-10h20zm2-2h-24v14h24v-14zm-18 3h-3v2h3v-2zm3 0h-2v2h2v-2zm3 0h-2v2h2v-2zm3 0h-2v2h2v-2zm3 0h-2v2h2v-2zm3 0h-2v2h2v-2zm-4 6h-10v2h10v-2zm4-3h-4v2h4v-2zm-14 0h-4v2h4v-2zm3 0h-2v2h2v-2zm3 0h-2v2h2v-2zm3 0h-2v2h2v-2z";
-        // Setting slider to show 1 second per frame
-        slider2.max = graphGZD.length;
+        // Setting slider to show 1 FXD data point per frame
+        slider2.max = graphFXD.length;
 
         var maxY2 = getGZDYMax2();
         var maxX2 = getGZDXMax2();
@@ -505,14 +494,15 @@
                 .domain([minX2, maxX2])
                 .range([0, width]);
             svg.append("g")
-                .attr("transform", "translate(" + (-45) + "," + (height - 10) + ")")
+                .attr("transform", "translate(" + (-15) + "," + (height - 15) + ")")
                 .call(d3.axisBottom(x));
 
             // Add Y axis
             var y = d3.scaleLinear()
-                .domain([minY2, maxY2 + 100])
+                .domain([maxY2, minY2])
                 .range([height, 0]);
             svg.append("g")
+                .attr("transform", "translate(" + 0 + "," + (-25) + ")")
                 .call(d3.axisLeft(y));
 
             // Formatting data
@@ -542,7 +532,7 @@
                             y: parseInt(element.RightScreenY, 10),
                             color: '#00FF00'
                         });
-                        lastGZD =element;
+                        lastGZD = element;
                     }
                 })
             } else {
@@ -554,34 +544,29 @@
                         color: "#0000FF"
                     });
                 }
-                fxd[fxd.length-1].color = "#F66A9";
+                fxd[fxd.length - 1].color = "#F66A9";
                 startpointGraph = (value - 4) < 0 ? 0 : value - 4;
 
                 graphEVD.forEach(element => {
-                  if ((currentGraphFXD.Time - 0) < (element.Time - 0)) {
-                      return;
-                  }
-                  if ((graphFXD[startpointGraph].Time-0)<element.Time - 0 ){
-                    console.log(element.Event);
-                    if(element.Event==="Keyboard")
-                    {
-                      console.log("KEY");
-                      eventKey.push({
-                        x: parseInt(graphFXD[startpointGraph].ScreenX, 10),
-                        y: parseInt(graphFXD[startpointGraph].ScreenY, 10),
-                        color: '#FFFFFF'
-                      });
+                    if ((currentGraphFXD.Time - 0) < (element.Time - 0)) {
+                        return;
                     }
-                    else
-                    {
-                      eventMouse.push({
-                        x: parseInt(graphFXD[startpointGraph].ScreenX, 10),
-                        y: parseInt(graphFXD[startpointGraph].ScreenY, 10),
-                        color: '#FFFFFF'
-                      });
+                    if ((graphFXD[startpointGraph].Time - 0) < element.Time - 0) {
+                        if (element.Event === "Keyboard") {
+                            eventKey.push({
+                                x: parseInt(graphFXD[startpointGraph].ScreenX, 10),
+                                y: parseInt(graphFXD[startpointGraph].ScreenY, 10),
+                                color: '#FFFFFF'
+                            });
+                        } else {
+                            eventMouse.push({
+                                x: parseInt(graphFXD[startpointGraph].ScreenX, 10),
+                                y: parseInt(graphFXD[startpointGraph].ScreenY, 10),
+                                color: '#FFFFFF'
+                            });
+                        }
+                        lastGZD = element
                     }
-                    lastGZD = element
-                  }
                 })
 
                 startpointGraph = (value - 4) < 0 ? 0 : value - 4;
@@ -605,13 +590,13 @@
                     }
                 })
             }
-            document.getElementById("graph_currenttime").innerHTML = (currentGraphFXD.Time / 1000)+ " seconds";
+            document.getElementById("graph_currenttime").innerHTML = (currentGraphFXD.Time / 1000) + " seconds";
             changePupil(right, graphGZD[value].RightPupil);
             changePupil(left, graphGZD[value].LeftPupil);
 
-            //sorting fixation Points
-            fxd.sort((a,b)=>{
-              return (a.x-b.x)+(a.y-b.y)
+            // Sorting fixation Points
+            fxd.sort((a, b) => {
+                return (a.x - b.x) + (a.y - b.y)
             })
 
             // Define the div for the tooltip
@@ -643,6 +628,20 @@
                 })
                 .attr("transform", function (d) {
                     return 'translate(' + (x(d.x)) + ',' + (y(d.y)) + ')';
+                }).on("mouseover", function (d) {
+                    div.transition()
+                        .duration(200)
+                        .style("opacity", .9);
+                    div.html("<div>Key Event</div>" +
+                            "<div> X: " + d.x + "</div>" +
+                            "<div> Y: " + d.y + "</div>")
+                        .style("left", (d3.event.pageX) + "px")
+                        .style("top", (d3.event.pageY - 28) + "px");
+                })
+                .on("mouseout", function (d) {
+                    div.transition()
+                        .duration(500)
+                        .style("opacity", 0);
                 })
 
             svg.selectAll(".mouse")
@@ -656,17 +655,31 @@
                 })
                 .attr("transform", function (d) {
                     return 'translate(' + (x(d.x)) + ',' + (y(d.y)) + ')';
+                }).on("mouseover", function (d) {
+                    div.transition()
+                        .duration(200)
+                        .style("opacity", .9);
+                    div.html("<div>Mouse Event</div>" +
+                            "<div> X: " + d.x + "</div>" +
+                            "<div> Y: " + d.y + "</div>")
+                        .style("left", (d3.event.pageX) + "px")
+                        .style("top", (d3.event.pageY - 28) + "px");
+                })
+                .on("mouseout", function (d) {
+                    div.transition()
+                        .duration(500)
+                        .style("opacity", 0);
                 })
 
-            //plot fixation data
+            // Plot fixation data
             svg.selectAll(".fixed")
                 .data(fxd)
                 .enter()
                 .append('path')
                 .attr("class", '.fixed')
                 .attr("d", eyeSVG)
-                .style("fill", function(d){
-                  return d.color;
+                .style("fill", function (d) {
+                    return d.color;
                 })
 
                 .on("mouseover", function (d) {
@@ -688,18 +701,18 @@
                     return 'translate(' + (x(d.x - 25)) + ',' + (y(d.y + 30)) + ')';
                 })
 
-                d3.selectAll("text").attr("fill", "#FFFFFF")
-                    .attr("font-weight", "bold")
-                    .attr("opacity", "1.0");
+            d3.selectAll("text").attr("fill", "#FFFFFF")
+                .attr("font-weight", "bold")
+                .attr("opacity", "1.0");
 
-                svg.selectAll("polygon")
-                    .data([fxd])
-                    .enter().append("polygon")
-                    .attr("points", function (d) {
-                        return d.map(function (d) {
-                            return [x(d.x), y(d.y)].join(",");
-                        }).join(" ");
-                    });
+            svg.selectAll("polygon")
+                .data([fxd])
+                .enter().append("polygon")
+                .attr("points", function (d) {
+                    return d.map(function (d) {
+                        return [x(d.x), y(d.y)].join(",");
+                    }).join(" ");
+                });
         }
 
         function moveFrame2(value) {
@@ -777,7 +790,6 @@
             });
         }
     </script>
-
     <!-- Embedded Javascript for Tree visualization -->
     <script>
         var treeslider = document.getElementById("tree_timeline");
@@ -808,7 +820,7 @@
         createTreeSVG(treeslider.value - 1);
 
         function createTreeSVG(value) {
-            // set the dimensions and margins of the graph
+            // Set the dimensions and margins of the graph
             var margin = {
                     top: 100,
                     right: 0,
@@ -825,8 +837,6 @@
                 .append("g")
                 .attr("transform",
                     "translate(" + margin.left + "," + margin.top + ")");
-            // read data
-
             // Add X axis
             var x = d3.scaleLinear()
                 .domain([0, maxTreeX])
@@ -834,7 +844,6 @@
             svg.append("g")
                 .attr("transform", "translate(" + 0 + "," + (height - 15) + ")")
                 .call(d3.axisBottom(x));
-
             // Add Y axis
             var y = d3.scaleLinear()
                 .domain([maxTreeY + 100, 0])
@@ -1136,9 +1145,6 @@
             });
         }
     </script>
-
-
-
     <!-- Embedded Javascript for the Summary Screen -->
     <script>
         // Defining Functions
@@ -1194,53 +1200,52 @@
                 });
             });
 
-        var lineFunction = d3.svg.line()
-            .x((d) => {
-                return x(d.x);
-            })
-            .y((d) => {
-                return y(d.y);
-            })
-            .interpolate("linear");
+            var lineFunction = d3.line()
+                .x((d) => {
+                    return x(d.x);
+                })
+                .y((d) => {
+                    return y(d.y);
+                });
 
-        // Define the div for the tooltip
-        var div = d3.select("body").append("div")
-            .attr("class", "tooltip")
-            .style("opacity", 0);
+            // Define the div for the tooltip
+            var div = d3.select("body").append("div")
+                .attr("class", "tooltip")
+                .style("opacity", 0);
 
-        svg.selectAll(".eyes")
-            .data(plots)
-            .enter()
-            .append('path')
-            .attr("class", '.eyes')
-            .attr("d", eyeSVG).on("mouseover", function (d) {
-                div.transition()
-                    .duration(200)
-                    .style("opacity", .9);
-                var type = d.color === "#00FF00" ? "Right Eye" : "Left Eye";
-                div.html("<div>" + type + "</div>")
-                    .style("left", (d3.event.pageX) + "px")
-                    .style("top", (d3.event.pageY - 28) + "px");
-            })
-            .on("mouseout", function (d) {
-                div.transition()
-                    .duration(500)
-                    .style("opacity", 0);
-            })
-            .style("fill", function (d) {
-                return d.color;
-            })
-            .attr("transform", function (d) {
-                return 'translate(' + (x(d.x)) + ',' + (y(d.y)) + ')';
-            });
+            svg.selectAll(".eyes")
+                .data(plots)
+                .enter()
+                .append('path')
+                .attr("class", '.eyes')
+                .attr("d", eyeSVG).on("mouseover", function (d) {
+                    div.transition()
+                        .duration(200)
+                        .style("opacity", .9);
+                    var type = d.color === "#00FF00" ? "Right Eye" : "Left Eye";
+                    div.html("<div>" + type + "</div>")
+                        .style("left", (d3.event.pageX) + "px")
+                        .style("top", (d3.event.pageY - 28) + "px");
+                })
+                .on("mouseout", function (d) {
+                    div.transition()
+                        .duration(500)
+                        .style("opacity", 0);
+                })
+                .style("fill", function (d) {
+                    return d.color;
+                })
+                .attr("transform", function (d) {
+                    return 'translate(' + (x(d.x)) + ',' + (y(d.y)) + ')';
+                });
 
-        svg.append("path")
-            .attr("d", lineFunction(plots))
-            .attr("stroke", "blue")
-            .attr("stroke-width", 1)
-            .attr("fill", "none")
+            svg.append("path")
+                .attr("d", lineFunction(plots))
+                .attr("stroke", "blue")
+                .attr("stroke-width", 1)
+                .attr("fill", "none")
 
-    }
+        }
 
         function createGraphSummary() {
             // set the dimensions and margins of the graph
@@ -1254,7 +1259,7 @@
                 height = 500;
 
             var fxdSVG =
-                 "M12 0c6.623 0 12 5.377 12 12s-5.377 12-12 12-12-5.377-12-12 5.377-12 12-12zm0 1c6.071 0 11 4.929 11 11s-4.929 11-11 11-11-4.929-11-11 4.929-11 11-11zm.053 17c.466 0 .844-.378.844-.845 0-.466-.378-.844-.844-.844-.466 0-.845.378-.845.844 0 .467.379.845.845.845zm.468-2.822h-.998c-.035-1.162.182-2.054.939-2.943.491-.57 1.607-1.479 1.945-2.058.722-1.229.077-3.177-2.271-3.177-1.439 0-2.615.877-2.928 2.507l-1.018-.102c.28-2.236 1.958-3.405 3.922-3.405 1.964 0 3.615 1.25 3.615 3.22 0 1.806-1.826 2.782-2.638 3.868-.422.563-.555 1.377-.568 2.09z";
+                "M12 0c6.623 0 12 5.377 12 12s-5.377 12-12 12-12-5.377-12-12 5.377-12 12-12zm0 1c6.071 0 11 4.929 11 11s-4.929 11-11 11-11-4.929-11-11 4.929-11 11-11zm.053 17c.466 0 .844-.378.844-.845 0-.466-.378-.844-.844-.844-.466 0-.845.378-.845.844 0 .467.379.845.845.845zm.468-2.822h-.998c-.035-1.162.182-2.054.939-2.943.491-.57 1.607-1.479 1.945-2.058.722-1.229.077-3.177-2.271-3.177-1.439 0-2.615.877-2.928 2.507l-1.018-.102c.28-2.236 1.958-3.405 3.922-3.405 1.964 0 3.615 1.25 3.615 3.22 0 1.806-1.826 2.782-2.638 3.868-.422.563-.555 1.377-.568 2.09z";
             // append the svg object to the body of the page
             var svg = d3.select("#summary_visualization")
                 .append("svg")
@@ -1288,14 +1293,6 @@
                 })
             });
 
-            var lineFunction = d3.svg.line()
-                .x((d) => {
-                    return x(d.x);
-                })
-                .y((d) => {
-                    return y(d.y);
-                })
-
             // Define the div for the tooltip
             var div = d3.select("body").append("div")
                 .attr("class", "tooltip")
@@ -1323,34 +1320,29 @@
                 .style("fill", function (d) {
                     return d.color;
                 })
-                .style("opacity", function(d){
-                  return 0.25;
+                .style("opacity", function (d) {
+                    return 0.25;
                 })
                 .attr("transform", function (d) {
                     return 'translate(' + (x(d.x)) + ',' + (y(d.y)) + ')';
                 })
-                .style("fill-rule", function(d){
-                  return 'evenodd';
+                .style("fill-rule", function (d) {
+                    return 'evenodd';
                 });
 
-                var border = [];
-                d3.selectAll("text").attr("fill", "#FFFFFF")
-                    .attr("font-weight", "bold")
-                    .attr("opacity", "1.0");
+            var border = [];
+            d3.selectAll("text").attr("fill", "#000000")
+                .attr("font-weight", "bold")
+                .attr("opacity", "1.0");
 
-                svg.selectAll("polygon")
-                    .data([plots])
-                    .enter().append("polygon")
-                    .attr("points", function (d) {
-                        return d.map(function (d) {
-                            return [x(d.x), y(d.y)].join(",");
-                        }).join(" ");
-                    });
-            // svg.append("path")
-            //     .attr("d", lineFunction(plots))
-            //     .attr("stroke", "blue")
-            //     .attr("stroke-width", 1)
-            //     .attr("fill", "none")
+            svg.selectAll("polygon")
+                .data([plots])
+                .enter().append("polygon")
+                .attr("points", function (d) {
+                    return d.map(function (d) {
+                        return [x(d.x), y(d.y)].join(",");
+                    }).join(" ");
+                });
 
         }
 
@@ -1606,6 +1598,7 @@
         position: absolute;
         top: 0;
     }
+
     polygon {
         fill: CadetBlue;
         opacity: .5;
